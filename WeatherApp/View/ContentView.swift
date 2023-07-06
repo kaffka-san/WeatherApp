@@ -93,193 +93,173 @@ struct ContentView: View {
     @State private var isAlertShown: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var isDataShowing = false
     var body: some View {
-        NavigationStack {
+        GeometryReader { geo in
             ZStack {
-                Rectangle().fill(.blue.gradient).ignoresSafeArea()
+                Rectangle()
+                    .overlay(background)
+                    .ignoresSafeArea()
 
-                // .padding()
-                // .background(Rectangle().fill(.blue.gradient).ignoresSafeArea())
-                if weatherVM.errorMessage == nil && !weatherVM.isLoading && !weatherVM.isLoadingImg && weatherVM.urlWeather.isEmpty {
-                    Spacer()
-                } else if weatherVM.isLoading || weatherVM.isLoadingImg {
-                    LoadingView()
-                } else if weatherVM.errorMessage != nil {
+                ScrollView {
                     VStack {
-                        ErrorView(weatherVM: weatherVM)
+                        SearchText(weatherVM: weatherVM)
 
-                    }
+                        Spacer()
+                        if weatherVM.errorMessage == nil && !weatherVM.isLoading && !weatherVM.isLoadingImg && weatherVM.urlWeather.isEmpty {
 
-                } else {
-                    VStack {
-                        if !weatherVM.urlImg.isEmpty {
+                            Spacer()
+                        } else if weatherVM.isLoading || weatherVM.isLoadingImg {
+                            Spacer()
+                            LoadingView()
+                            Spacer()
+                        } else if weatherVM.errorMessage != nil {
                             VStack {
-                                Text(weatherVM.cityName)
-                                    .foregroundColor(.white)
-                                    .font(.largeTitle)
-                                    .frame(width: 330)
-                                Image(systemName: weatherVM.iconName)
-                                    .renderingMode(.original)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 100, height: 100)
-                                Text(weatherVM.temp)
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 70, weight: .thin))
+                                Spacer()
+                                ErrorView(weatherVM: weatherVM)
+                                Spacer()
                             }
-                           // .padding(.horizontal, 10)
-                            .padding(.vertical, 10)
-                            .background(RoundedRectangle(cornerRadius: 20)
-                                .fill(.ultraThinMaterial.opacity(0.6))
-                            )
-                            // .padding()
-                            if weatherVM.errorMessageImage == nil {
+                        } else {
+                            VStack {
+                                if !weatherVM.urlImg.isEmpty {
+                                    Spacer()
+                                    VStack {
+                                        Text(weatherVM.cityName)
+                                            .foregroundColor(.white)
+                                            .font(.largeTitle)
+                                            .frame(width: 300)
+                                        Image(systemName: weatherVM.iconName)
+                                            .renderingMode(.original)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 80, height: 80)
+                                        Text(weatherVM.temp)
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 70, weight: .thin))
+                                    }
+                                    .padding(.vertical, 10)
 
-                                ImageLoader(imageUrl: weatherVM.urlImg)
-                                    .scaledToFill()
-                                    .frame(width: 150, height: 150, alignment: .center)
-                                    .clipped()
-                                    .clipShape(Circle())
+                                    .background(
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(.ultraThinMaterial.opacity(0.7))
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(.black.opacity(0.3))
+                                        }
+
+                                    )
                                     .padding()
+                                    if weatherVM.errorMessageImage == nil {
+                                        Spacer()
+                                        ImageLoader(imageUrl: weatherVM.urlImg)
+                                            .scaledToFill()
+                                            .frame(width: 150, height: 150, alignment: .center)
+                                            .clipped()
+                                            .clipShape(Circle())
+                                            .padding()
+                                        Spacer()
 
-                            }
-                            // Spacer()
-                        }
-                    }
-                    .padding()
-                    .animation(.default, value: weatherVM.isLoadingImg)
-                    // .padding()
-                    .background(
-                        ZStack {
-                            if weatherVM.errorMessageImage == nil &&  !weatherVM.urlImg.isEmpty {
+                                    }
 
-                                ImageLoader( imageUrl: weatherVM.urlImg)
-                                    .scaledToFill()
-                                    .ignoresSafeArea()
-                                    .blur(radius: 5)
-                               // .frame(width: geometry.size.width * 1.3, height: geometry.size.height * 1.3)
-                                    .brightness(-0.04)
-                                ContainerRelativeShape()
-                                    .fill(.black)
-                                    .ignoresSafeArea()
-                                    .opacity(0.3)
-                            }
-                        }
-                            .scaleEffect(1.7)
-                    )
-
-                }
-
-                VStack {
-                    SearchText(weatherVM: weatherVM)
-                    Spacer()
-                    Button {
-                        print("get weather")
-                        switch locationDataManager.locationManager.authorizationStatus {
-                        case .authorizedWhenInUse:  // Location services are available.
-                            if let location = locationDataManager.locationManager.location?.coordinate {
-                                let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
-                                locationCL.fetchCityAndCountry { city, _, error in
-                                    guard let city = city, error == nil else { return }
-                                    print(city)  // Rio de Janeiro, Brazil
-                                    weatherVM.createImgUrl(cityNameSearched: city)
-                                    print("location is \(location)")
-                                    weatherVM.getWeatherFromLocation(for: location)
-                                    weatherVM.fetchAsyncImg()
-                                    weatherVM.fetchAsync()
                                 }
                             }
 
-                        case .restricted, .denied:  // Location services currently unavailable.
-                            // Insert code here of what should happen when Location services are NOT authorized
-                            alertTitle = "Eror"
-                            alertMessage = ("Current location data was restricted or denied.")
-                            isAlertShown = true
-                        case .notDetermined:        // Authorization not determined yet.
-                            Text("Finding your location...")
-                            ProgressView()
-                        default:
-                            ProgressView()
+                            .animation(.default, value: weatherVM.isLoadingImg)
+
                         }
+                        // tuu
+                        Button {
+                            print("get weather")
+                            switch locationDataManager.locationManager.authorizationStatus {
+                            case .authorizedWhenInUse:  // Location services are available.
+                                if let location = locationDataManager.locationManager.location?.coordinate {
+                                    let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
+                                    locationCL.fetchCityAndCountry { city, _, error in
+                                        guard let city = city, error == nil else { return }
+                                        print(city)  // Rio de Janeiro, Brazil
+                                        weatherVM.createImgUrl(cityNameSearched: city)
+                                        print("location is \(location)")
+                                        weatherVM.getWeatherFromLocation(for: location)
+                                        weatherVM.fetchAsyncImg()
+                                        weatherVM.fetchAsync()
+                                    }
+                                }
+
+                            case .restricted, .denied:  // Location services currently unavailable.
+                                // Insert code here of what should happen when Location services are NOT authorized
+                                alertTitle = "Eror"
+                                alertMessage = ("Current location data was restricted or denied.")
+                                isAlertShown = true
+                            case .notDetermined:        // Authorization not determined yet.
+                                Text("Finding your location...")
+                                ProgressView()
+                            default:
+                                ProgressView()
+                            }
+
+                        }
+                    label: {
+                        HStack {
+                            Text("Current location")
+                            Image(systemName: "location.circle.fill")
+                        }
+                    }
+                    .alert(isPresented: $isAlertShown, content: {
+                        Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Got it!")))
+                    })
+                        // .contentShape(Rectangle())
+                    .frame(width: 250, height: 50)
+
+                    .background(Capsule()
+                        .stroke(.white, lineWidth: 1))
+                    .foregroundColor(.white)
+                   // .padding()
 
                     }
-                label: {
-                    HStack {
-                        Text("Current location")
-                        Image(systemName: "location.circle.fill")
-                    }
-                }
-                .alert(isPresented: $isAlertShown, content: {
-                    Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Got it!")))
-                })
 
-                .frame(width: 250, height: 50)
-
-                .background(Capsule()
-                    .stroke(.white, lineWidth: 1))
-                .foregroundColor(.white)
+                    .frame(height: geo.size.height * 0.95)
+                    // .ignoresSafeArea(.keyboard)
+                    .padding()
                 }
-                .padding()
+
+            }
+        } .ignoresSafeArea(.keyboard)
+
+    }
+
+    var searchField: some View {
+
+        SearchText(weatherVM: weatherVM)
+    }
+    @ViewBuilder
+    var background: some View {
+        if !weatherVM.urlImg.isEmpty && !weatherVM.cityName.isEmpty && weatherVM.errorMessage == nil {
+            ZStack {
+                Rectangle().overlay( ImageLoader( imageUrl: weatherVM.urlImg)
+                    .scaledToFill()
+                    .ignoresSafeArea()
+
+                    .clipped()
+
+                    .blur(radius: 5)
+                    .brightness(-0.02))
+                .allowsHitTesting(false)
+                Rectangle().fill(.black)
+                    .opacity(0.2)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
 
             }
 
-            /*.toolbar {
-             ToolbarItem(placement: .bottomBar) {
-             Button {
-             print("get weather")
-             switch locationDataManager.locationManager.authorizationStatus {
-             case .authorizedWhenInUse:  // Location services are available.
-             if let location = locationDataManager.locationManager.location?.coordinate {
-             let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
-             locationCL.fetchCityAndCountry { city, _, error in
-             guard let city = city, error == nil else { return }
-             print(city)  // Rio de Janeiro, Brazil
-             weatherVM.createImgUrl(cityNameSearched: city)
-             print("location is \(location)")
-             weatherVM.getWeatherFromLocation(for: location)
-             weatherVM.fetchAsyncImg()
-             weatherVM.fetchAsync()
-             }
-             }
-
-             case .restricted, .denied:  // Location services currently unavailable.
-             // Insert code here of what should happen when Location services are NOT authorized
-             alertTitle = "Eror"
-             alertMessage = ("Current location data was restricted or denied.")
-             isAlertShown = true
-             case .notDetermined:        // Authorization not determined yet.
-             Text("Finding your location...")
-             ProgressView()
-             default:
-             ProgressView()
-             }
-
-             }
-             label: {
-             HStack {
-             Text("Current location")
-             Image(systemName: "location.circle.fill")
-             }
-             }
-             .alert(isPresented: $isAlertShown, content: {
-             Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Got it!")))
-             })
-
-             .frame(width: 250, height: 50)
-
-             .background(Capsule()
-             .stroke(.white, lineWidth: 1))
-             .foregroundColor(.white)
-             */
+        } else {
+            Rectangle()
+                .fill(.blue.gradient)
+                .ignoresSafeArea()
 
         }
     }
 
-    var searchField: some View {
-        SearchText(weatherVM: weatherVM)
-    }
 }
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
