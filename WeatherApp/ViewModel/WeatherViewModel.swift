@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 import CoreLocationUI
-@MainActor
+
 class WeatherViewModel: ObservableObject {
 
     @Published var cityName: String = ""
@@ -37,6 +37,7 @@ class WeatherViewModel: ObservableObject {
 
     var urlWeather: String = ""
     var urlFullImg: String = ""
+
     func prepareString(str: String) -> String {
         let trimmedStr = str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         if let encodedTrimmedStr = trimmedStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
@@ -63,13 +64,15 @@ class WeatherViewModel: ObservableObject {
         let url = "https://api.openweathermap.org/data/2.5/weather?"
         urlWeather = "\(url)lat=\(coordinats.latitude)&lon=\(coordinats.longitude)&&appid=\(apiKey)&units=metric"
     }
+    @MainActor
     func fetchAsync() {
         isLoading = true
         errorMessage = nil
         Task(priority: .medium) {
             do {
-                isLoading = false
+
                 let weatherModel = try await service.fetchAsync(WeatherModel.self, url: urlWeather)
+                isLoading = false
                 self.cityName = weatherModel.name
                 print("city name: \(weatherModel.name)")
                 self.temp = String(format: "%.f°", weatherModel.main.temp)
@@ -86,22 +89,36 @@ class WeatherViewModel: ObservableObject {
             }
         }
     }
+    @MainActor
     func fetchAsyncImg() {
         isLoadingImg = true
         errorMessageImage = nil
         Task(priority: .medium) {
             do {
-                isLoadingImg = false
                 let imageModel = try await service.fetchAsync(ImageModel.self, url: urlFullImg)
+                isLoadingImg = false
                 self.urlImg = imageModel.results[0].urls["regular"] ?? "monstera"
                 print("actual umage url is: \(self.urlImg)")
             } catch {
                 self.errorMessageImage = error.localizedDescription
                 print("trying error img: \(String(describing: error.localizedDescription))")
             }
-
         }
     }
+    @MainActor
+    func getData(using cityNameSearched: String, coordinats: CLLocationCoordinate2D? = nil) {
+        if let coordinatsSafe = coordinats {
+            getWeatherFromLocation(for: coordinatsSafe)
+        } else {
+            createUrl(cityNameSearched: cityNameSearched)
+        }
+        createImgUrl(cityNameSearched: cityNameSearched)
+        fetchAsync()
+        fetchAsyncImg()
+        isLoading = true
+
+    }
+
     /*func fetchImg(){
         errorMessageImage = nil
         isLoadingImg = true

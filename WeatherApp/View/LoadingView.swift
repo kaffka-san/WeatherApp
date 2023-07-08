@@ -10,9 +10,9 @@ import SwiftUI
 struct LoadingView: View {
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(.cyan)
-                .ignoresSafeArea()
+//            Rectangle()
+//                .fill(.cyan)
+//                .ignoresSafeArea()
             VStack {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
