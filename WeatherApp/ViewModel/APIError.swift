@@ -38,4 +38,3 @@ enum APIError: Error {
     }
 
 }
-

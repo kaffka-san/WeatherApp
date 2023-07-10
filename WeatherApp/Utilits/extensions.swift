@@ -23,15 +23,15 @@ extension View {
                                                 blendMode: BlendMode = .normal,
                                                 opacity: Double = 1) -> some View {
         self
-//            .overlay {
-//                shape
-//                    .stroke(color, lineWidth: lineWidth)
-//                    .blendMode(blendMode)
-//                    .offset(y: 1)
-//                    .blur(radius: blur)
-//                    .mask { shape }
-//                    .opacity(opacity)
-//            }
+            .overlay {
+                shape
+                    .stroke(color, lineWidth: lineWidth)
+                    .blendMode(blendMode)
+                    // .offset(y: 1)
+                    .blur(radius: blur)
+                    .mask { shape }
+                    .opacity(opacity)
+            }
     }
 }
 

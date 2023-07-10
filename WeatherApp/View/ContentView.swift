@@ -8,126 +8,11 @@
 import Foundation
 import SwiftUI
 import Combine
-import CoreLocation
-import CoreLocationUI
-#if canImport(UIKit)
-extension View {
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-#endif
 
-struct SearchText: View {
-    @State private var searchedText: String = ""
-    @State private var isImageLoading = false
-    @ObservedObject var weatherVM: WeatherViewModel
-    var body: some View {
-        HStack(spacing: 2) {
-
-            //Spacer()
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.white)
-                .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                .onTapGesture {
-                    weatherVM.getData(using: searchedText)
-                    searchedText = ""
-                }
-            TextField("Search", text: $searchedText)
-                .onSubmit {
-                    weatherVM.getData(using: searchedText)
-                    searchedText = ""
-                }
-                .accentColor(.white)
-
-
-        }
-        //        TextField("Search", text: $searchedText)
-        //            .onSubmit {
-        //                weatherVM.getData(using: searchedText)
-        //                searchedText = ""
-        //            }
-        //            .overlay(
-        //                HStack {
-        //                    Spacer()
-        //                    Image(systemName: "magnifyingglass")
-        //                        .foregroundColor(.gray)
-        //                        .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-        //                        .onTapGesture {
-        //                            weatherVM.getData(using: searchedText)
-        //                            searchedText = ""
-        //                        }
-        //                }
-        //            )
-        .onTapGesture {
-            self.hideKeyboard()
-        }
-        //.foregroundColor(.black)
-        .padding(.horizontal, 9)
-        .padding(.vertical, 7)
-        //.tintColor(Color.white)
-
-         .frame(width: 360, height: 38, alignment: .leading)
-
-        .background(
-            RoundedRectangle(cornerRadius: 35)
-                .backgroundBlur(radius: 25, opaque: true)
-               // .fill(Color.black.opacity(0.5))
-                .foregroundColor(Color.darkPurple.opacity(0.8))
-            //.foregroundColor(Color.black.opacity(0.5))
-
-
-            // .background(Color.indigo.opacity(1))
-        )
-        .innerShadow(shape: RoundedRectangle(cornerRadius: 35), color: .gray.gradient, lineWidth: 1, blur: 0, blendMode: .overlay, opacity: 1)
-
-        //.textFieldStyle(.roundedBorder)
-
-    }
-}
-
-struct ImageLoader: View {
-    @State private var imageOpacity = 0.0
-    @Binding var animationOpacity: Double
-    let imageUrl: String
-    var body: some View {
-        AsyncImage(url: URL(string: imageUrl)) { phase in
-            if let image = phase.image {
-                ZStack {
-                    image.resizable()
-                        .onAppear {
-                            imageOpacity = 100.0
-                            animationOpacity = 100.0
-                        }
-                        .onDisappear {
-                            imageOpacity = 0.0
-                            animationOpacity = 0.0
-                        }
-                        .opacity(imageOpacity)
-                        .animation( .easeIn(duration: 2), value: imageOpacity)
-                }
-            } else if phase.error != nil {
-                Text("No Image")
-
-            } else {
-                //                VStack {
-                //                    ProgressView()
-                //                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                //                        .scaleEffect(3)
-                //                }
-            }
-        }
-    }
-}
 struct ContentView: View {
     @StateObject var weatherVM = WeatherViewModel()
-    // var weatherVM = WeatherViewModel()
-    @StateObject var locationDataManager = LocationDataManager()
-    @State private var isAlertShown: Bool = false
-    @State private var alertTitle: String = ""
-    @State private var alertMessage: String = ""
     @State private var isDataShowing = false
-    @State var animationOpacity: Double = 0.0
+    @State var animationOpacity: Double = 0
     var body: some View {
         NavigationView {
             GeometryReader { geo in
@@ -138,177 +23,79 @@ struct ContentView: View {
                     ScrollView {
                         VStack {
                             SearchText(weatherVM: weatherVM)
-
-                            Spacer()
-                            if weatherVM.errorMessage == nil && !weatherVM.isLoading && !weatherVM.isLoadingImg && weatherVM.urlWeather.isEmpty {
+                            if weatherVM.stateApp == .empty {
 
                                 Spacer()
-                            } else if( weatherVM.isLoading || weatherVM.isLoadingImg) && weatherVM.errorMessage == nil {
+                            } else if weatherVM.stateApp == .loading {
                                 Spacer()
                                 LoadingView()
                                 Spacer()
-                            } else if weatherVM.errorMessage != nil {
+                            } else if weatherVM.stateApp == .error {
                                 VStack {
                                     Spacer()
                                     ErrorView(weatherVM: weatherVM)
                                     Spacer()
                                 }
-                            } else {
+                            } else if weatherVM.stateApp == .loadDataAndImage {
+                                // MMain Weather Data
                                 VStack {
-                                    if !weatherVM.urlImg.isEmpty {
-                                        Spacer()
-                                        VStack {
-                                            Text(weatherVM.cityName)
-                                                .foregroundColor(.white)
-                                                .font(.largeTitle)
-                                                .frame(width: 350)
-                                            Text("Francie")
-                                                .foregroundColor(.white)
-                                                .font(.system(size: 20, weight: .thin))
-                                                .frame(width: 315)
-                                            HStack {
-                                                Image(systemName: weatherVM.iconName)
-                                                    .renderingMode(.original)
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .frame(width: 80, height: 80)
-                                                    .padding()
-                                                Text(weatherVM.temp)
-                                                    .foregroundColor(.white)
-                                                    .font(.system(size: 70, weight: .thin))
-                                                    .padding()
-
-                                            }
-                                            Text("Cloudy")
-                                                .foregroundColor(.white)
-                                                .font(.system(size: 20, weight: .thin))
-
-                                        }
-                                        .padding(.vertical, 30)
-                                        .backgroundBlur(radius: 20, opaque: true)
-                                        .background(Color.darkPurple.opacity(0.5))
-
-                                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                                        .innerShadow(shape: RoundedRectangle(cornerRadius: 20), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
-                                       // .padding()
-                                        Spacer()
-                                        Spacer()
-                                        HStack(spacing: 30){
-                                            HStack{
-
-
-
-                                                VStack(spacing: 10){
-                                                    Image(systemName: "humidity.fill")
-                                                    Text("24%")
-                                                        .foregroundColor(.white)
-                                                        .font(.system(size: 20, weight: .thin))
-                                                }
-                                                .padding(20)
-                                                .backgroundBlur(radius: 45, opaque: true)
-                                                //.background(Color.indigo.opacity(0.2))
-                                                .background(Color.darkPurple.opacity(0.7))
-
-                                                .clipShape(Circle())
-                                                .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
-
-                                            }
-                                            HStack {
-
-
-
-                                                VStack(spacing: 10){
-                                                    Image(systemName: "humidity.fill")
-                                                    Text("24%")
-                                                        .foregroundColor(.white)
-                                                        .font(.system(size: 20, weight: .thin))
-                                                }
-                                                .padding(20)
-                                                .backgroundBlur(radius: 45, opaque: false)
-
-                                                .background(Color.darkPurple.opacity(0.7))
-
-                                                .clipShape(Circle())
-                                                .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
-
-                                            }
-                                            HStack {
-
-
-
-                                                VStack(spacing: 10){
-                                                    Image(systemName: "humidity.fill")
-                                                    Text("24%")
-                                                        .foregroundColor(.white)
-                                                        .font(.system(size: 20, weight: .thin))
-                                                }
-                                                .padding(20)
-                                                .backgroundBlur(radius: 45, opaque: false)
-                                                .background(Color.darkPurple.opacity(0.7))
-
-                                                .clipShape(Circle())
-                                                .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
-
-                                            }
-                                        }
-                                        Spacer()
-                                        HStack{
-                                            Group{
-                                                Text("Feels like:")
-                                                Text("29°")
-                                            }
+                                    Spacer()
+                                    VStack {
+                                        Text(weatherVM.cityName)
+                                            .foregroundColor(.white)
+                                            .font(.largeTitle)
+                                        Text("Francie")
+                                            .foregroundColor(.white)
                                             .font(.system(size: 20, weight: .thin))
 
+                                        HStack {
+                                            Image(systemName: weatherVM.iconName)
+                                                .renderingMode(.original)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 80, height: 80)
+                                                .padding()
+                                            Text(weatherVM.temp)
+                                                .foregroundColor(.white)
+                                                .font(.system(size: 70, weight: .thin))
+                                                .padding()
                                         }
+                                        Text("Cloudy")
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 20, weight: .thin))
 
-
-                                        Spacer()
-
-
-
-                                        /* if weatherVM.errorMessageImage == nil {
-                                         Spacer()
-                                         ImageLoader(animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
-                                         .scaledToFill()
-                                         .frame(width: 150, height: 150, alignment: .center)
-                                         .clipped()
-                                         .clipShape(Circle())
-                                         .padding()
-
-                                         Spacer()
-
-                                         } */
                                     }
-                                } .opacity( animationOpacity)
-                                    .animation( .easeIn(duration: 2), value: animationOpacity)
-                                // .animation(.default, value: weatherVM.isLoadingImg)
-
-                            }
-
-                            Button {
-                                print("get weather")
-                                switch locationDataManager.locationManager.authorizationStatus {
-                                case .authorizedWhenInUse:  // Location services are available.
-                                    if let location = locationDataManager.locationManager.location?.coordinate {
-                                        let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
-                                        locationCL.fetchCityAndCountry { city, country, error in
-                                            guard let city = city, let country = country, error == nil else { return }
-                                            print("\(city), \(country)")  // Rio de Janeiro, Brazil
-                                            weatherVM.getData(using: city, coordinats: location)
-                                        }
+                                    .padding(.vertical, 30)
+                                    .padding(.horizontal, 30)
+                                    .backgroundBlur(radius: 20, opaque: true)
+                                    .background(Color.darkPurple.opacity(0.5))
+                                    .clipShape(RoundedRectangle(cornerRadius: 40))
+                                    Spacer()
+                                    Spacer()
+                                    Spacer()
+                                    HStack(spacing: 30) {
+                                        RoundIcon(imageName: "plus", textInput: "test")
+                                        RoundIcon(imageName: "plus", textInput: "test")
+                                        RoundIcon(imageName: "plus", textInput: "test")
                                     }
 
-                                case .restricted, .denied:  // Location services currently unavailable.
-                                    // Insert code here of what should happen when Location services are NOT authorized
-                                    alertTitle = "Eror"
-                                    alertMessage = ("Current location data was restricted or denied.")
-                                    isAlertShown = true
-                                case .notDetermined:        // Authorization not determined yet.
-                                    Text("Finding your location...")
-                                    ProgressView()
-                                default:
-                                    ProgressView()
+                                    Spacer()
+                                    HStack {
+                                        Group {
+                                            Text("Feels like:")
+                                            Text("29°")
+                                        }
+                                        .font(.system(size: 20, weight: .thin))
+
+                                    }
+                                    Spacer()
+
                                 }
+                                .opacity(animationOpacity)
+                                .animation(.easeIn(duration: 2), value: animationOpacity)
+                            }
+                            Button {
+                                weatherVM.getLocation()
                             }
                         label: {
                             HStack {
@@ -316,16 +103,17 @@ struct ContentView: View {
                                 Image(systemName: "location.circle.fill")
                             }
                         }
-                        .alert(isPresented: $isAlertShown, content: {
-                            Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Got it!")))
-                        })
+                        .alert(item: $weatherVM.alertItem) { alertItem in
+                            Alert(title: alertItem.title,
+                                  message: alertItem.message,
+                                  dismissButton: alertItem.dismissButton)
+                        }
                         .frame(width: 250, height: 50)
                         .backgroundBlur(radius: 25, opaque: true)
-
                         .background(Color.darkPurple.opacity(0.7))
                         .clipShape(RoundedRectangle(cornerRadius: 40))
-                        .innerShadow(shape: RoundedRectangle(cornerRadius: 40), color: .gray.gradient, lineWidth: 1, blur: 0, blendMode: .overlay, opacity: 1)
                         .foregroundColor(.white)
+
                         }
 
                         .frame(height: geo.size.height * 0.95)
@@ -338,18 +126,16 @@ struct ContentView: View {
             .preferredColorScheme(.dark)
 
         }
-        .onAppear{
+        .onAppear {
             weatherVM.getData(using: "Viena")
         }
-
     }
-
     var searchField: some View {
         SearchText(weatherVM: weatherVM)
     }
     @ViewBuilder
     var background: some View {
-        if !weatherVM.urlImg.isEmpty && !weatherVM.cityName.isEmpty && weatherVM.errorMessage == nil {
+        if weatherVM.stateApp == .loadDataAndImage {
             GeometryReader { geo in
                 ZStack {
                     Rectangle().overlay( ImageLoader( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
@@ -357,7 +143,7 @@ struct ContentView: View {
                         .ignoresSafeArea()
                         .clipped()
                         .blur(radius: 0)
-                                         //.brightness(-0.02)
+                                         // .brightness(-0.02)
                     )
                     // .contrast(1.2)
                     .allowsHitTesting(false)
@@ -369,7 +155,7 @@ struct ContentView: View {
                         .opacity(0.3)
                         .ignoresSafeArea()
                         .allowsHitTesting(false)
-                    VStack{
+                    VStack {
                         Spacer()
                         Rectangle()
                             .fill(.black.opacity(0.2))
@@ -378,19 +164,14 @@ struct ContentView: View {
                             .frame(width: 310, height: geo.size.height * 0.4)
                             .clipShape(RoundedRectangle(cornerRadius: 30))
                     }
-
                 }
                 .scaleEffect(1.3)
-
             }
-
-
 
         } else {
             Rectangle()
                 .fill(.indigo.gradient)
                 .ignoresSafeArea()
-
         }
     }
 
