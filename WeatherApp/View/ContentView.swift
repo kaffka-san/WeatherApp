@@ -63,20 +63,20 @@ struct SearchText: View {
             self.hideKeyboard()
         }
         //.foregroundColor(.black)
-        .padding(.horizontal, 6)
+        .padding(.horizontal, 9)
         .padding(.vertical, 7)
         //.tintColor(Color.white)
 
-        // .frame( height: 36, alignment: .leading)
+         .frame(width: 360, height: 38, alignment: .leading)
 
         .background(
             RoundedRectangle(cornerRadius: 35)
-
-                .fill(Color.black.opacity(0.5))
-                .foregroundColor(Color.indigo.opacity(0.2))
+                .backgroundBlur(radius: 25, opaque: true)
+               // .fill(Color.black.opacity(0.5))
+                .foregroundColor(Color.darkPurple.opacity(0.8))
             //.foregroundColor(Color.black.opacity(0.5))
 
-                .backgroundBlur(radius: 25, opaque: false)
+
             // .background(Color.indigo.opacity(1))
         )
         .innerShadow(shape: RoundedRectangle(cornerRadius: 35), color: .gray.gradient, lineWidth: 1, blur: 0, blendMode: .overlay, opacity: 1)
@@ -121,6 +121,7 @@ struct ImageLoader: View {
 }
 struct ContentView: View {
     @StateObject var weatherVM = WeatherViewModel()
+    // var weatherVM = WeatherViewModel()
     @StateObject var locationDataManager = LocationDataManager()
     @State private var isAlertShown: Bool = false
     @State private var alertTitle: String = ""
@@ -160,7 +161,7 @@ struct ContentView: View {
                                             Text(weatherVM.cityName)
                                                 .foregroundColor(.white)
                                                 .font(.largeTitle)
-                                                .frame(width: 315)
+                                                .frame(width: 350)
                                             Text("Francie")
                                                 .foregroundColor(.white)
                                                 .font(.system(size: 20, weight: .thin))
@@ -184,14 +185,15 @@ struct ContentView: View {
 
                                         }
                                         .padding(.vertical, 30)
-                                        .backgroundBlur(radius: 45, opaque: true)
-                                        .background(Color.indigo.opacity(0.5))
-                                        .background(Color.black.opacity(0.7).blendMode(.multiply))
+                                        .backgroundBlur(radius: 20, opaque: true)
+                                        .background(Color.darkPurple.opacity(0.5))
+
                                         .clipShape(RoundedRectangle(cornerRadius: 20))
                                         .innerShadow(shape: RoundedRectangle(cornerRadius: 20), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
-                                        .padding()
+                                       // .padding()
                                         Spacer()
-                                        HStack(spacing: 20){
+                                        Spacer()
+                                        HStack(spacing: 30){
                                             HStack{
 
 
@@ -204,10 +206,11 @@ struct ContentView: View {
                                                 }
                                                 .padding(20)
                                                 .backgroundBlur(radius: 45, opaque: true)
-                                                    .background(Color.indigo.opacity(0.2))
-                                                    .background(Color.black.opacity(0.5))
-                                                    .clipShape(Circle())
-                                                    .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
+                                                //.background(Color.indigo.opacity(0.2))
+                                                .background(Color.darkPurple.opacity(0.7))
+
+                                                .clipShape(Circle())
+                                                .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
 
                                             }
                                             HStack {
@@ -222,10 +225,11 @@ struct ContentView: View {
                                                 }
                                                 .padding(20)
                                                 .backgroundBlur(radius: 45, opaque: false)
-                                                    .background(Color.indigo.opacity(0.2))
-                                                    .background(Color.black.opacity(0.5))
-                                                    .clipShape(Circle())
-                                                    .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
+
+                                                .background(Color.darkPurple.opacity(0.7))
+
+                                                .clipShape(Circle())
+                                                .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
 
                                             }
                                             HStack {
@@ -240,16 +244,28 @@ struct ContentView: View {
                                                 }
                                                 .padding(20)
                                                 .backgroundBlur(radius: 45, opaque: false)
-                                                    .background(Color.indigo.opacity(0.5))
-                                                    .background(Color.black.opacity(0.5))
-                                                    .clipShape(Circle())
-                                                    .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
+                                                .background(Color.darkPurple.opacity(0.7))
+
+                                                .clipShape(Circle())
+                                                .innerShadow(shape: Circle(), color: .gray.gradient, lineWidth: 1, blur: 0.0, blendMode: .overlay, opacity: 1)
 
                                             }
                                         }
+                                        Spacer()
+                                        HStack{
+                                            Group{
+                                                Text("Feels like:")
+                                                Text("29°")
+                                            }
+                                            .font(.system(size: 20, weight: .thin))
+
+                                        }
+
 
                                         Spacer()
-                                        Spacer()
+
+
+
                                         /* if weatherVM.errorMessageImage == nil {
                                          Spacer()
                                          ImageLoader(animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
@@ -268,6 +284,7 @@ struct ContentView: View {
                                 // .animation(.default, value: weatherVM.isLoadingImg)
 
                             }
+
                             Button {
                                 print("get weather")
                                 switch locationDataManager.locationManager.authorizationStatus {
@@ -292,7 +309,6 @@ struct ContentView: View {
                                 default:
                                     ProgressView()
                                 }
-
                             }
                         label: {
                             HStack {
@@ -304,9 +320,9 @@ struct ContentView: View {
                             Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Got it!")))
                         })
                         .frame(width: 250, height: 50)
-                        .backgroundBlur(radius: 25, opaque: false)
-                        .background(Color.black.opacity(0.5))
-                        .background(Color.indigo.opacity(1))
+                        .backgroundBlur(radius: 25, opaque: true)
+
+                        .background(Color.darkPurple.opacity(0.7))
                         .clipShape(RoundedRectangle(cornerRadius: 40))
                         .innerShadow(shape: RoundedRectangle(cornerRadius: 40), color: .gray.gradient, lineWidth: 1, blur: 0, blendMode: .overlay, opacity: 1)
                         .foregroundColor(.white)
@@ -322,6 +338,9 @@ struct ContentView: View {
             .preferredColorScheme(.dark)
 
         }
+        .onAppear{
+            weatherVM.getData(using: "Viena")
+        }
 
     }
 
@@ -331,38 +350,39 @@ struct ContentView: View {
     @ViewBuilder
     var background: some View {
         if !weatherVM.urlImg.isEmpty && !weatherVM.cityName.isEmpty && weatherVM.errorMessage == nil {
-            ZStack {
-                Rectangle().overlay( ImageLoader( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                    .clipped()
-                    .blur(radius: 0)
-                    //.brightness(-0.02)
-                )
-               // .contrast(1.2)
-                .allowsHitTesting(false)
-                Rectangle().fill(.black)
-                    .opacity(0.1)
-                    .ignoresSafeArea()
+            GeometryReader { geo in
+                ZStack {
+                    Rectangle().overlay( ImageLoader( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
+                        .scaledToFill()
+                        .ignoresSafeArea()
+                        .clipped()
+                        .blur(radius: 0)
+                                         //.brightness(-0.02)
+                    )
+                    // .contrast(1.2)
                     .allowsHitTesting(false)
-                Rectangle().fill(.indigo.blendMode(.multiply))
-                    .opacity(0.3)
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                VStack{
-                    Spacer()
-                    Rectangle()
-                        .fill(.black.opacity(0.2))
-                        .background(Color.indigo.opacity(0.1))
-                        .backgroundBlur(radius: 35, opaque: true)
-                        .frame(width: 310, height: 350)
-                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                    Rectangle().fill(.black)
+                        .opacity(0.1)
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
+                    Rectangle().fill(.indigo.blendMode(.multiply))
+                        .opacity(0.3)
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
+                    VStack{
+                        Spacer()
+                        Rectangle()
+                            .fill(.black.opacity(0.2))
+                            .background(Color.indigo.opacity(0.1))
+                            .backgroundBlur(radius: 8, opaque: true)
+                            .frame(width: 310, height: geo.size.height * 0.4)
+                            .clipShape(RoundedRectangle(cornerRadius: 30))
+                    }
+
                 }
+                .scaleEffect(1.3)
 
             }
-            .scaleEffect(1.3)
-
-
 
 
 

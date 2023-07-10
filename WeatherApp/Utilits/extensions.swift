@@ -33,7 +33,9 @@ extension View {
 //                    .opacity(opacity)
 //            }
     }
+}
 
-
-
+extension Color {
+    static let darkPurple = Color("DarkPurple")
+    static let lightPurple = Color("LightPurple")
 }

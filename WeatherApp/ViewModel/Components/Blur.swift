@@ -25,7 +25,7 @@ struct Blur: View {
     var opaque: Bool = false
     var body: some View {
        Backdrop()
-            .blur(radius: 3, opaque: true)
+            .blur(radius: radius, opaque: opaque)
     }
 }
 

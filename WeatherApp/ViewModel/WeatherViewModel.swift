@@ -8,7 +8,12 @@
 import Foundation
 import CoreLocation
 import CoreLocationUI
-
+enum StateApp {
+    case empty
+    case data
+    case error
+    case loading
+}
 class WeatherViewModel: ObservableObject {
 
     @Published var cityName: String = ""
@@ -20,6 +25,7 @@ class WeatherViewModel: ObservableObject {
     @Published var isLoadingImg = false
     @Published var errorMessage: String?
     @Published var errorMessageImage: String?
+    @Published var stateApp: StateApp = .empty
 
     let service = ApiService()
     func getIcon(id: Int) -> String {
@@ -33,6 +39,9 @@ class WeatherViewModel: ObservableObject {
         case 801..<900: return"cloud.fill"
         default: return ""
         }
+    }
+    func getState(){
+        
     }
 
     var urlWeather: String = ""
