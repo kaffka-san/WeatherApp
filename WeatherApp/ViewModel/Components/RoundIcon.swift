@@ -17,15 +17,16 @@ struct RoundIcon: View {
                 .foregroundColor(.white)
                 .font(.system(size: 20, weight: .thin))
         }
-        .padding(20)
+        .frame(width: 80)
+        .padding()
         .backgroundBlur(radius: 45, opaque: true)
-        .background(Color.darkPurple.opacity(0.7))
+        .background(Color.lightPurple.opacity(0.8))
         .clipShape(Circle())
     }
 }
 
 struct RoundIcon_Previews: PreviewProvider {
     static var previews: some View {
-        RoundIcon(imageName: "plus", textInput: "test")
+        RoundIcon(imageName: "plus", textInput: "1080.12")
     }
 }

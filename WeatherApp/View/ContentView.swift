@@ -38,31 +38,30 @@ struct ContentView: View {
                                 }
                             } else if weatherVM.stateApp == .loadDataAndImage {
                                 // MMain Weather Data
-                                VStack {
+                                VStack(spacing: 20) {
                                     Spacer()
                                     VStack {
-                                        Text(weatherVM.cityName)
+                                        Text(weatherVM.weatherData.cityName)
                                             .foregroundColor(.white)
                                             .font(.largeTitle)
-                                        Text("Francie")
+                                            .multilineTextAlignment(.center)
+                                        Text(weatherVM.weatherData.countryName)
                                             .foregroundColor(.white)
                                             .font(.system(size: 20, weight: .thin))
+                                            .multilineTextAlignment(.center)
 
                                         HStack {
-                                            Image(systemName: weatherVM.iconName)
+                                            Image(systemName: weatherVM.weatherData.iconName)
                                                 .renderingMode(.original)
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(width: 80, height: 80)
                                                 .padding()
-                                            Text(weatherVM.temp)
+                                            Text(weatherVM.weatherData.temp)
                                                 .foregroundColor(.white)
                                                 .font(.system(size: 70, weight: .thin))
                                                 .padding()
                                         }
-                                        Text("Cloudy")
-                                            .foregroundColor(.white)
-                                            .font(.system(size: 20, weight: .thin))
 
                                     }
                                     .padding(.vertical, 30)
@@ -73,21 +72,19 @@ struct ContentView: View {
                                     Spacer()
                                     Spacer()
                                     Spacer()
-                                    HStack(spacing: 30) {
-                                        RoundIcon(imageName: "plus", textInput: "test")
-                                        RoundIcon(imageName: "plus", textInput: "test")
-                                        RoundIcon(imageName: "plus", textInput: "test")
+                                    HStack(spacing: 0) {
+                                        RoundIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLie)
+                                        RoundIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity)
+                                        RoundIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.preassure)
                                     }
 
-                                    Spacer()
-                                    HStack {
-                                        Group {
-                                            Text("Feels like:")
-                                            Text("29°")
-                                        }
+                                   // Spacer()
+
+                                    Text(weatherVM.weatherData.description)
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 20, weight: .thin))
                                         .font(.system(size: 20, weight: .thin))
 
-                                    }
                                     Spacer()
 
                                 }
@@ -110,7 +107,7 @@ struct ContentView: View {
                         }
                         .frame(width: 250, height: 50)
                         .backgroundBlur(radius: 25, opaque: true)
-                        .background(Color.darkPurple.opacity(0.7))
+                        .background(Color.lightPurple.opacity(0.8))
                         .clipShape(RoundedRectangle(cornerRadius: 40))
                         .foregroundColor(.white)
 

@@ -17,10 +17,15 @@ enum StateApp {
 }
 class WeatherViewModel: ObservableObject {
 
-    @Published var cityName: String = ""
-    @Published var temp: String = ""
-    @Published var iconName: String = ""
-    @Published var feelsLike: String = ""
+    @Published var weatherData = WeatherData(cityName: "",
+                                             countryName: "",
+                                             temp: "",
+                                             iconName: "",
+                                             humidity: "",
+                                             preassure: "",
+                                             feelsLie: "",
+                                             description: "")
+
     @Published var urlImg: String = ""
     @Published var isLoading: Bool = false
     @Published var isLoadingImg = false
@@ -33,7 +38,7 @@ class WeatherViewModel: ObservableObject {
             print("Empty")
             return StateApp.empty
         } else if errorMessage != nil {
-            print("error")
+            print("erroe")
             return StateApp.error
         } else if  (isLoading || isLoadingImg) && errorMessage == nil {
             print("loading")
@@ -41,7 +46,7 @@ class WeatherViewModel: ObservableObject {
         } else if !isLoadingImg && !isLoading && errorMessage == nil && errorMessageImage != nil {
             print("data loaded")
             return StateApp.loadData
-        } else if !urlImg.isEmpty && !cityName.isEmpty && errorMessage == nil && errorMessageImage == nil {
+        } else if !urlImg.isEmpty && !weatherData.cityName.isEmpty && errorMessage == nil && errorMessageImage == nil {
             print("all loaded")
             return StateApp.loadDataAndImage
         }
@@ -98,6 +103,7 @@ func prepareString(str: String) -> String {
 func createImgUrl(cityNameSearched: String) {
     let cityWord = "city"
     let combineSearch = "\(cityNameSearched) \(cityWord)"
+    // let combineSearch = "\(cityNameSearched)"
     let cityPrepared = prepareString(str: combineSearch)
     urlFullImg = "https://api.unsplash.com/search/photos?query=\(cityPrepared)&client_id=gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE"
     print("urlImg: \(urlFullImg)")
@@ -121,15 +127,32 @@ func fetchAsync() {
     Task(priority: .medium) {
         do {
 
-            let weatherModel = try await service.fetchAsync(WeatherModel.self, url: urlWeather)
+            let weatherModel = try await self.service.fetchAsync(WeatherModel.self, url: self.urlWeather)
             isLoading = false
-            self.cityName = weatherModel.name
-            print("city name: \(weatherModel.name)")
-            self.temp = String(format: "%.f°", weatherModel.main.temp)
-            print("original description : \(weatherModel.weather[0].description)")
-            self.iconName = self.getIcon(id: weatherModel.weather[0].id )
-            print("description \(self.iconName)")
-            self.feelsLike = String(weatherModel.main.feelsLike)
+            self.weatherData = WeatherData(cityName: weatherModel.name,
+                                             countryName: weatherModel.sys.country,
+                                             temp: String(format: "%.f°", weatherModel.main.temp),
+                                             iconName: self.getIcon(id: weatherModel.weather[0].id ),
+                                             humidity: String(weatherModel.main.humidity),
+                                             preassure: String(weatherModel.main.pressure),
+                                             feelsLie: String(format: "%.f°", weatherModel.main.feelsLike),
+                                             description: weatherModel.weather[0].description)
+//            self.weatherData.cityName = weatherModel.name
+//            self.weatherData.countryName = weatherModel.sys.country
+//            self.weatherData.description = weatherModel.weather[0].description
+//            self.weatherData.humidity = String(weatherModel.main.humidity)
+//            self.weatherData.preassure = String(weatherModel.main.pressure)
+//            self.weatherData.iconName = self.getIcon(id: weatherModel.weather[0].id )
+//            self.weatherData.temp = String(format: "%.f°", weatherModel.main.temp)
+//            self.weatherData.feelsLie = String(format: "%.f°", weatherModel.main.feelsLike)
+
+           // self.cityName = weatherModel.name
+            print("city name: \(weatherData.cityName)")
+          //  self.temp = String(format: "%.f°", weatherModel.main.temp)
+            print("original description : \(weatherData.description)")
+          //  self.iconName = self.getIcon(id: weatherModel.weather[0].id )
+            print("description \(weatherData.iconName)")
+         //   self.feelsLike = String(weatherModel.main.feelsLike)
             print("___________________________")
 
         } catch let apiError as APIError {
@@ -147,7 +170,9 @@ func fetchAsyncImg() {
         do {
             let imageModel = try await service.fetchAsync(ImageModel.self, url: urlFullImg)
             isLoadingImg = false
-            self.urlImg = imageModel.results[0].urls["regular"] ?? "monstera"
+            if  !imageModel.results.isEmpty {
+                self.urlImg = imageModel.results[0].urls["regular"] ?? ""
+            }
             print("actual umage url is: \(self.urlImg)")
         } catch {
             print("!!!!!!!!!!! error img: \(String(describing: error.localizedDescription))")
