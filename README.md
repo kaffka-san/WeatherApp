@@ -8,7 +8,7 @@ This is a weather app written in Swift using SwiftUI. It utilizes the OpenWeathe
 - Temperature feels like
   
  ## Preview
- <img src="" width="900">
+ <img src="https://github.com/kaffka-san/WeatherApp/blob/main/WeatherApp/Images/weatherApp_01.png?raw=true" width="300"> <img src="https://github.com/kaffka-san/WeatherApp/blob/main/WeatherApp/Images/weatherApp_02.png?raw=true" width="300">
 
 ## Features
 
