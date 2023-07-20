@@ -8,23 +8,6 @@
 import Foundation
 import CoreLocation
 import CoreLocationUI
-enum StateApp {
-    case empty
-    case loadData
-    case loadDataAndImage
-    case error
-    case loading
-}
-enum WeatherIcon: String, CaseIterable {
-    case storm = "cloud.bolt.rain.fill"
-    case lightRain = "cloud.drizzle.fill"
-    case rain = "cloud.rain.fill"
-    case snow = "cloud.snow.fill"
-    case fog = "cloud.fog.fill"
-    case sun = "sun.max.fill"
-    case cloud = "cloud.fill"
-    case empty = ""
-}
 
 class WeatherViewModel: ObservableObject {
 
@@ -44,6 +27,10 @@ class WeatherViewModel: ObservableObject {
     @Published var errorMessageImage: String?
     @Published var alertItem: AlertItem?
     @Published var locationDataManager = LocationDataManager()
+
+    var urlWeather: String = ""
+    var urlFullImg: String = ""
+
     var stateApp: StateApp {
         if errorMessage == nil && isLoading && isLoadingImg && urlWeather.isEmpty {
             print("Empty")
@@ -64,7 +51,7 @@ class WeatherViewModel: ObservableObject {
         return StateApp.empty
     }
 
-    let service = ApiService()
+    let service = NetworkManager()
 
     @MainActor
     func getLocation() {
@@ -83,14 +70,10 @@ class WeatherViewModel: ObservableObject {
         case .notDetermined:        // Authorisation not determined yet.
             alertItem = AlertContext.locationNotDetermined
         default:
-            print("Default case of getting location")
             return
         }
 
     }
-
-    var urlWeather: String = ""
-    var urlFullImg: String = ""
 
     func prepareString(str: String) -> String {
         let trimmedStr = str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -99,49 +82,62 @@ class WeatherViewModel: ObservableObject {
         }
         return ""
     }
-    func createImgUrl(cityNameSearched: String) {
-//        let cityWord = "city street"
-//        let combineSearch = "\(cityNameSearched) \(cityWord)"
-        let combineSearch = "\(cityNameSearched)"
-        let cityPrepared = prepareString(str: combineSearch)
-        urlFullImg = "https://api.unsplash.com/search/photos?query=\(cityPrepared)&client_id=gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE"
-        print("urlImg: \(urlFullImg)")
-    }
-    func createUrl(cityNameSearched: String) {
-        let apiKey = "0dd9c31dbb4daf81bf91fa90977cefd3"
-        let url = "https://api.openweathermap.org/data/2.5/weather?q="
+    func createImgUrl (cityNameSearched: String) {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "api.unsplash.com"
+        components.path = "/search/photos"
+        let apiKey = URLQueryItem(name: "client_id", value: "gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE")
         let cityPrepared = prepareString(str: cityNameSearched)
-        urlWeather = "\(url + cityPrepared)&&appid=\(apiKey)&units=metric"
-        print("url weather: \(urlWeather)")
+        let city = URLQueryItem(name: "query", value: cityPrepared)
+        let page = URLQueryItem(name: "page", value: "1")
+        components.queryItems = [apiKey, city, page]
+        if let url = components.string {
+            urlFullImg = url
+        }
     }
-    func getWeatherFromLocation(for coordinates: CLLocationCoordinate2D) {
-        let apiKey = "0dd9c31dbb4daf81bf91fa90977cefd3"
-        let url = "https://api.openweathermap.org/data/2.5/weather?"
-        urlWeather = "\(url)lat=\(coordinates.latitude)&lon=\(coordinates.longitude)&&appid=\(apiKey)&units=metric"
+    func createUrlWeather (cityNameSearched: String? = "", coordinates: CLLocationCoordinate2D? = nil ) {
+
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "api.openweathermap.org"
+        components.path = "/data/2.5/weather"
+        let apiKey = URLQueryItem(name: "appid", value: "0dd9c31dbb4daf81bf91fa90977cefd3")
+        let units = URLQueryItem(name: "units", value: "metric")
+        if let cityNameSearched {
+            let cityPrepared = prepareString(str: cityNameSearched)
+            let city = URLQueryItem(name: "q", value: cityPrepared)
+            components.queryItems = [city, apiKey, units]
+        }
+        if let coordinates {
+            let lon = URLQueryItem(name: "lon", value: String(coordinates.longitude))
+            let lat = URLQueryItem(name: "lat", value: String(coordinates.latitude))
+            components.queryItems = [lat, lon, apiKey, units]
+        }
+
+        if let urlString = components.string {
+            urlWeather = urlString
+        }
     }
+
     @MainActor
     func fetchAsync() {
         isLoading = true
         errorMessage = nil
-        Task(priority: .medium) {
+        Task {
             do {
-
                 let weatherModel = try await self.service.fetchAsync(WeatherModel.self, url: self.urlWeather)
                 isLoading = false
                 self.weatherData = WeatherData(cityName: weatherModel.name,
-                                               countryName: Locale.current.localizedString(forRegionCode: weatherModel.sys.country) ?? weatherModel.sys.country,
+                                               countryName: Locale.current.localizedString(forRegionCode: weatherModel.sys.country)
+                                               ?? weatherModel.sys.country,
                                                temp: String(format: "%.f°", weatherModel.main.temp),
                                                iconName: self.getIcon(id: weatherModel.weather[0].id ),
                                                humidity: String(format: "%.f", weatherModel.main.humidity),
                                                pressure: String(format: "%.f", weatherModel.main.pressure),
                                                feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
                                                description: weatherModel.weather[0].description.capitalized)
-                print("city name: \(weatherData.cityName)")
-                print("original description : \(weatherData.description)")
-                print("description \(weatherData.iconName)")
-                print("___________________________")
             } catch let apiError as APIError {
-                print(" !!!!!!!!! error: \(apiError)")
                 self.errorMessage = apiError.localizedDescription
 
             }
@@ -151,28 +147,21 @@ class WeatherViewModel: ObservableObject {
     func fetchAsyncImg() {
         isLoadingImg = true
         errorMessageImage = nil
-        Task(priority: .medium) {
+        Task {
             do {
                 let imageModel = try await service.fetchAsync(ImageModel.self, url: urlFullImg)
                 isLoadingImg = false
                 if  !imageModel.results.isEmpty {
                     self.urlImg = imageModel.results[0].urls["regular"] ?? ""
                 }
-                print("actual umage url is: \(self.urlImg)")
             } catch {
-                print("!!!!!!!!!!! error img: \(String(describing: error.localizedDescription))")
                 self.errorMessageImage = error.localizedDescription
             }
-
         }
     }
     @MainActor
     func getData(using cityNameSearched: String, coordinates: CLLocationCoordinate2D? = nil) {
-        if let coordinates {
-            getWeatherFromLocation(for: coordinates)
-        } else {
-            createUrl(cityNameSearched: cityNameSearched)
-        }
+        createUrlWeather(cityNameSearched: cityNameSearched, coordinates: coordinates)
         createImgUrl(cityNameSearched: cityNameSearched)
         fetchAsync()
         fetchAsyncImg()
@@ -192,7 +181,23 @@ class WeatherViewModel: ObservableObject {
         }
     }
 }
-
+enum WeatherIcon: String, CaseIterable {
+    case storm = "cloud.bolt.rain.fill"
+    case lightRain = "cloud.drizzle.fill"
+    case rain = "cloud.rain.fill"
+    case snow = "cloud.snow.fill"
+    case fog = "cloud.fog.fill"
+    case sun = "sun.max.fill"
+    case cloud = "cloud.fill"
+    case empty = ""
+}
+enum StateApp {
+    case empty
+    case loadData
+    case loadDataAndImage
+    case error
+    case loading
+}
 // https://api.openweathermap.org/data/2.5/weather?q=London&&appid=0dd9c31dbb4daf81bf91fa90977cefd3
 // api.teleport.org/api/urban_areas/slug:london/images/
 // https://api.unsplash.com/photos/?page=1&query=london&client_id=gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE
