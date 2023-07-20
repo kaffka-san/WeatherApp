@@ -17,10 +17,10 @@ struct RoundIcon: View {
                 .foregroundColor(.white)
                 .font(.system(size: 20, weight: .thin))
         }
-        .frame(width: 80)
+        .frame(width: 85)
         .padding()
-        .backgroundBlur(radius: 45, opaque: true)
-        .background(Color.lightPurple.opacity(0.8))
+        .backgroundBlur(radius: 45, opaque: false)
+        .background(Color.lightPurple.opacity(1))
         .clipShape(Circle())
     }
 }

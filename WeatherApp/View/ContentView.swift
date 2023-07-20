@@ -22,7 +22,9 @@ struct ContentView: View {
                         .ignoresSafeArea()
                     ScrollView {
                         VStack {
+
                             SearchText(weatherVM: weatherVM)
+
                             if weatherVM.stateApp == .empty {
 
                                 Spacer()
@@ -43,11 +45,12 @@ struct ContentView: View {
                                     VStack {
                                         Text(weatherVM.weatherData.cityName)
                                             .foregroundColor(.white)
-                                            .font(.largeTitle)
+                                            .font(.system(size: 40, weight: .regular))
                                             .multilineTextAlignment(.center)
+                                           // .padding(.vertical, 5)
                                         Text(weatherVM.weatherData.countryName)
                                             .foregroundColor(.white)
-                                            .font(.system(size: 20, weight: .thin))
+                                            .font(.system(size: 25, weight: .thin))
                                             .multilineTextAlignment(.center)
 
                                         HStack {
@@ -64,7 +67,7 @@ struct ContentView: View {
                                         }
 
                                     }
-                                    .padding(.vertical, 30)
+                                    .padding(.vertical, 20)
                                     .padding(.horizontal, 30)
                                     .backgroundBlur(radius: 20, opaque: true)
                                     .background(Color.darkPurple.opacity(0.5))
@@ -73,16 +76,15 @@ struct ContentView: View {
                                     Spacer()
                                     Spacer()
                                     HStack(spacing: 0) {
-                                        RoundIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLie)
+                                        RoundIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLike)
                                         RoundIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity)
-                                        RoundIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.preassure)
+                                        RoundIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.pressure)
                                     }
 
                                    // Spacer()
 
                                     Text(weatherVM.weatherData.description)
                                         .foregroundColor(.white)
-                                        .font(.system(size: 20, weight: .thin))
                                         .font(.system(size: 20, weight: .thin))
 
                                     Spacer()
@@ -110,11 +112,12 @@ struct ContentView: View {
                         .background(Color.lightPurple.opacity(0.8))
                         .clipShape(RoundedRectangle(cornerRadius: 40))
                         .foregroundColor(.white)
-
+                        // .padding()
+                        Spacer()
                         }
 
-                        .frame(height: geo.size.height * 0.95)
-                        .padding()
+                        .frame(height: geo.size.height)
+
                     }
                     .scrollDismissesKeyboard(.immediately)
                 }
@@ -144,11 +147,11 @@ struct ContentView: View {
                     )
                     // .contrast(1.2)
                     .allowsHitTesting(false)
-                    Rectangle().fill(.black)
-                        .opacity(0.1)
-                        .ignoresSafeArea()
-                        .allowsHitTesting(false)
-                    Rectangle().fill(.indigo.blendMode(.multiply))
+//                    Rectangle().fill(.black)
+//                        .opacity(0.1)
+//                        .ignoresSafeArea()
+//                        .allowsHitTesting(false)
+                    Rectangle().fill(Color.lightPurple.blendMode(.multiply))
                         .opacity(0.3)
                         .ignoresSafeArea()
                         .allowsHitTesting(false)
@@ -156,10 +159,12 @@ struct ContentView: View {
                         Spacer()
                         Rectangle()
                             .fill(.black.opacity(0.2))
-                            .background(Color.indigo.opacity(0.1))
+                            .background(Color.lightPurple.opacity(0.1))
                             .backgroundBlur(radius: 8, opaque: true)
                             .frame(width: 310, height: geo.size.height * 0.4)
                             .clipShape(RoundedRectangle(cornerRadius: 30))
+                            .opacity(animationOpacity)
+                            .animation(.easeIn(duration: 2), value: animationOpacity)
                     }
                 }
                 .scaleEffect(1.3)
@@ -167,7 +172,7 @@ struct ContentView: View {
 
         } else {
             Rectangle()
-                .fill(.indigo.gradient)
+                .fill(Color.darkPurple.gradient)
                 .ignoresSafeArea()
         }
     }

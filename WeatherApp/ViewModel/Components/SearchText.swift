@@ -45,7 +45,7 @@ struct SearchText: View {
         .padding(.vertical, 7)
         .background(
             RoundedRectangle(cornerRadius: 35)
-                .fill(Color.lightPurple.opacity(0.5))
+                .fill(Color.darkPurple.opacity(0.5))
                 .backgroundBlur(radius: 25, opaque: true)
                 .clipShape(RoundedRectangle(cornerRadius: 35)))
     }

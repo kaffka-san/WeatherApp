@@ -13,8 +13,8 @@ struct WeatherData {
     var temp: String
     var iconName: String
     var humidity: String
-    var preassure: String
-    var feelsLie: String
+    var pressure: String
+    var feelsLike: String
     var description: String
 }
 

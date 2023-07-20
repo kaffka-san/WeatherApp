@@ -18,7 +18,7 @@ struct AlertContext {
     static let locationRestricted = AlertItem(title: Text("Location Error"),
                                     message: Text("Current location data was restricted or denied."),
                                               dismissButton: .default(Text("Got it")))
-    static let locationNotDeremined = AlertItem(title: Text("Location Error"),
+    static let locationNotDetermined = AlertItem(title: Text("Location Error"),
                                                 message: Text("Can't get your location."),
                                                           dismissButton: .default(Text("Got it")))
 }
