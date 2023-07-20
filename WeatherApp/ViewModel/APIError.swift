@@ -14,17 +14,7 @@ enum APIError: Error {
     case parsing(DecodingError?)
     case unknown
 
-   /* var description: String {
-        switch self{
-        case .badURL, .parsing, .unknown :
-            return "Sorry, something went wrong."
-        case .badResponse(statusCode: _):
-            return "Sorry, the connection to our server failed"
-        case .url(let error):
-            return error?.localizedDescription ?? "Something went wrong"
-        }
-    }*/
-    var localizedDescription: String {
+    var localisedDescription: String {
         switch self {
         case .unknown: return "unknown error"
         case .badURL: return "invalid URL"

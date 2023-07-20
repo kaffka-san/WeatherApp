@@ -33,19 +33,19 @@ class WeatherViewModel: ObservableObject {
 
     var stateApp: StateApp {
         if errorMessage == nil && isLoading && isLoadingImg && urlWeather.isEmpty {
-            print("Empty")
+            print("StateApp: Empty")
             return StateApp.empty
         } else if errorMessage != nil {
-            print("error")
+            print("StateApp: error")
             return StateApp.error
-        } else if  (isLoading || isLoadingImg) && errorMessage == nil {
-            print("loading")
+        } else if  (isLoading || isLoadingImg) && (errorMessage == nil && errorMessageImage == nil) {
+            print("StateApp: loading")
             return StateApp.loading
-        } else if !isLoadingImg && !isLoading && errorMessage == nil && errorMessageImage != nil {
-            print("data loaded")
+        } else if !isLoadingImg && !isLoading && errorMessage == nil && (errorMessageImage != nil) {
+            print("StateApp: data loaded")
             return StateApp.loadData
-        } else if !urlImg.isEmpty && !weatherData.cityName.isEmpty && errorMessage == nil && errorMessageImage == nil {
-            print("all loaded")
+        } else {
+            print("StateApp: all loaded")
             return StateApp.loadDataAndImage
         }
         return StateApp.empty
@@ -126,7 +126,7 @@ class WeatherViewModel: ObservableObject {
         errorMessage = nil
         Task {
             do {
-                let weatherModel = try await self.service.fetchAsync(WeatherModel.self, url: self.urlWeather)
+                let weatherModel = try await NetworkManager.shared.fetchData(WeatherModel.self, url: self.urlWeather)
                 isLoading = false
                 self.weatherData = WeatherData(cityName: weatherModel.name,
                                                countryName: Locale.current.localizedString(forRegionCode: weatherModel.sys.country)
@@ -138,7 +138,8 @@ class WeatherViewModel: ObservableObject {
                                                feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
                                                description: weatherModel.weather[0].description.capitalized)
             } catch let apiError as APIError {
-                self.errorMessage = apiError.localizedDescription
+                self.errorMessage = apiError.localisedDescription
+                print("error get weather data \(self.errorMessage)")
 
             }
         }
@@ -149,12 +150,14 @@ class WeatherViewModel: ObservableObject {
         errorMessageImage = nil
         Task {
             do {
-                let imageModel = try await service.fetchAsync(ImageModel.self, url: urlFullImg)
+                let imageModel = try await NetworkManager.shared.fetchData(ImageModel.self, url: urlFullImg)
                 isLoadingImg = false
                 if  !imageModel.results.isEmpty {
                     self.urlImg = imageModel.results[0].urls["regular"] ?? ""
                 }
             } catch {
+                isLoadingImg = false
+                print("error get image \( error.localizedDescription )")
                 self.errorMessageImage = error.localizedDescription
             }
         }

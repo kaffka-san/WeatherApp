@@ -11,8 +11,7 @@ import Combine
 
 struct ContentView: View {
     @StateObject var weatherVM = WeatherViewModel()
-    @State private var isDataShowing = false
-    @State var animationOpacity: Double = 0
+    @State var animationOpacity: Double = 0.0
     var body: some View {
         NavigationView {
             GeometryReader { geo in
@@ -22,15 +21,14 @@ struct ContentView: View {
                         .ignoresSafeArea()
                     ScrollView {
                         VStack {
-
                             SearchText(weatherVM: weatherVM)
-
                             if weatherVM.stateApp == .empty {
-
                                 Spacer()
+
                             } else if weatherVM.stateApp == .loading {
                                 Spacer()
                                 LoadingView()
+
                                 Spacer()
                             } else if weatherVM.stateApp == .error {
                                 VStack {
@@ -38,7 +36,7 @@ struct ContentView: View {
                                     ErrorView(weatherVM: weatherVM)
                                     Spacer()
                                 }
-                            } else if weatherVM.stateApp == .loadDataAndImage {
+                            } else if weatherVM.stateApp == .loadData || weatherVM.stateApp == .loadDataAndImage {
                                 // MMain Weather Data
                                 VStack(spacing: 20) {
                                     Spacer()
@@ -47,7 +45,7 @@ struct ContentView: View {
                                             .foregroundColor(.white)
                                             .font(.system(size: 40, weight: .regular))
                                             .multilineTextAlignment(.center)
-                                           // .padding(.vertical, 5)
+                                        // .padding(.vertical, 5)
                                         Text(weatherVM.weatherData.countryName)
                                             .foregroundColor(.white)
                                             .font(.system(size: 25, weight: .thin))
@@ -80,9 +78,6 @@ struct ContentView: View {
                                         RoundIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity)
                                         RoundIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.pressure)
                                     }
-
-                                   // Spacer()
-
                                     Text(weatherVM.weatherData.description)
                                         .foregroundColor(.white)
                                         .font(.system(size: 20, weight: .thin))
@@ -92,6 +87,13 @@ struct ContentView: View {
                                 }
                                 .opacity(animationOpacity)
                                 .animation(.easeIn(duration: 2), value: animationOpacity)
+                                .onAppear {
+
+                                    animationOpacity = 100.0
+                                }
+                                .onDisappear {
+                                    animationOpacity = 0.0
+                                }
                             }
                             Button {
                                 weatherVM.getLocation()
@@ -112,8 +114,8 @@ struct ContentView: View {
                         .background(Color.lightPurple.opacity(0.8))
                         .clipShape(RoundedRectangle(cornerRadius: 40))
                         .foregroundColor(.white)
-                        // .padding()
-                        Spacer()
+                            // .padding()
+                            //  Spacer()
                         }
 
                         .frame(height: geo.size.height)
@@ -135,26 +137,40 @@ struct ContentView: View {
     }
     @ViewBuilder
     var background: some View {
-        if weatherVM.stateApp == .loadDataAndImage {
-            GeometryReader { geo in
-                ZStack {
-                    Rectangle().overlay( ImageLoader( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
+
+        GeometryReader { geo in
+            ZStack {
+                Rectangle().fill(Color.darkPurple.gradient)
+                    .ignoresSafeArea()
+                if weatherVM.stateApp == .loadDataAndImage {
+                    Rectangle().overlay(
+                        ImageRemote( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
                         .scaledToFill()
                         .ignoresSafeArea()
                         .clipped()
                         .blur(radius: 0)
-                                         // .brightness(-0.02)
+
                     )
-                    // .contrast(1.2)
                     .allowsHitTesting(false)
-//                    Rectangle().fill(.black)
-//                        .opacity(0.1)
-//                        .ignoresSafeArea()
-//                        .allowsHitTesting(false)
-                    Rectangle().fill(Color.lightPurple.blendMode(.multiply))
-                        .opacity(0.3)
+                    VStack {
+                        Spacer()
+                        Rectangle()
+                            .fill(.black.opacity(0.2))
+                            .background(Color.lightPurple.opacity(0.1))
+                            .backgroundBlur(radius: 8, opaque: true)
+                            .frame(width: 310, height: geo.size.height * 0.4)
+                            .clipShape(RoundedRectangle(cornerRadius: 30))
+                            .opacity(animationOpacity)
+                            .animation(.easeIn(duration: 2), value: animationOpacity)
+                    }
+                } else if weatherVM.stateApp != .loading && weatherVM.stateApp != .error {
+                    Rectangle().overlay( Image("city3")
+                        .resizable()
+                        .scaledToFill()
                         .ignoresSafeArea()
-                        .allowsHitTesting(false)
+                        .clipped()
+                    )
+                    .allowsHitTesting(false)
                     VStack {
                         Spacer()
                         Rectangle()
@@ -167,18 +183,12 @@ struct ContentView: View {
                             .animation(.easeIn(duration: 2), value: animationOpacity)
                     }
                 }
-                .scaleEffect(1.3)
             }
+            .scaleEffect(1.3)
 
-        } else {
-            Rectangle()
-                .fill(Color.darkPurple.gradient)
-                .ignoresSafeArea()
         }
     }
-
 }
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView().preferredColorScheme(.dark)

@@ -12,7 +12,7 @@ final class NetworkManager {
     static let shared = NetworkManager()
     private let cache = NSCache<NSString, UIImage>()
 
-    func fetchWeather<T> (url: String?) async throws -> T {
+    func fetchData <T: Decodable>(_ type: T.Type, url: String?) async throws -> T {
 
         guard let url = URL(string: url ?? "") else {
             print("T: error creating url \(type) url: \(String(describing: url))")
@@ -20,15 +20,15 @@ final class NetworkManager {
         }
         let (data, response) = try await URLSession.shared.data(from: url)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-            print("error badResponse")
+            print("T: error badResponse \(type)")
             throw APIError.badResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0)
 
         }
         do {
-            print("try Decoding ")
+            print("try Decoding \(type)")
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
-            return try decoder.decode(WeatherModel.self, from: data)
+            return try decoder.decode(T.self, from: data)
         } catch {
             print("error with api \(error)")
             throw APIError.parsing(error as? DecodingError)
@@ -41,11 +41,13 @@ final class NetworkManager {
             completed(image)
         }
         guard let url = URL(string: urlString) else {
+            print("async img failed bad url")
             completed(nil)
             return
         }
-        let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, _ in
+        let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
             guard let data, let image = UIImage(data: data) else {
+                print("async img failed \(error)")
                 completed(nil)
                 return
             }
