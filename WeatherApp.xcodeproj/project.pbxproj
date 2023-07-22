@@ -14,7 +14,7 @@
 		3069164E2A5C619100118B87 /* RoundIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3069164D2A5C619100118B87 /* RoundIcon.swift */; };
 		306916502A5C77EA00118B87 /* WeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3069164F2A5C77EA00118B87 /* WeatherData.swift */; };
 		30CBFB702A4DEDB700F3303C /* WeatherAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB6F2A4DEDB700F3303C /* WeatherAppApp.swift */; };
-		30CBFB722A4DEDB700F3303C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB712A4DEDB700F3303C /* ContentView.swift */; };
+		30CBFB722A4DEDB700F3303C /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB712A4DEDB700F3303C /* WeatherView.swift */; };
 		30CBFB742A4DEDB800F3303C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CBFB732A4DEDB800F3303C /* Assets.xcassets */; };
 		30CBFB772A4DEDB800F3303C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CBFB762A4DEDB800F3303C /* Preview Assets.xcassets */; };
 		30CBFB7E2A4E1B6E00F3303C /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB7D2A4E1B6E00F3303C /* WeatherViewModel.swift */; };
@@ -27,7 +27,6 @@
 		30CBFB922A51E58E00F3303C /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB912A51E58E00F3303C /* NetworkManager.swift */; };
 		30CBFB972A531CA500F3303C /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB962A531CA500F3303C /* LocationManager.swift */; };
 		30E8A3D82A588DD20042BC6F /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E8A3D72A588DD20042BC6F /* extensions.swift */; };
-		30E8A3DB2A59D12B0042BC6F /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E8A3DA2A59D12B0042BC6F /* WeatherView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +38,7 @@
 		3069164F2A5C77EA00118B87 /* WeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherData.swift; sourceTree = "<group>"; };
 		30CBFB6C2A4DEDB700F3303C /* WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30CBFB6F2A4DEDB700F3303C /* WeatherAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAppApp.swift; sourceTree = "<group>"; };
-		30CBFB712A4DEDB700F3303C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		30CBFB712A4DEDB700F3303C /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
 		30CBFB732A4DEDB800F3303C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		30CBFB762A4DEDB800F3303C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		30CBFB7D2A4E1B6E00F3303C /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
@@ -53,7 +52,6 @@
 		30CBFB952A5313FE00F3303C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		30CBFB962A531CA500F3303C /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		30E8A3D72A588DD20042BC6F /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
-		30E8A3DA2A59D12B0042BC6F /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,8 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				30CBFB8A2A51D2F000F3303C /* ErrorView.swift */,
-				30E8A3DA2A59D12B0042BC6F /* WeatherView.swift */,
-				30CBFB712A4DEDB700F3303C /* ContentView.swift */,
+				30CBFB712A4DEDB700F3303C /* WeatherView.swift */,
 				30CBFB8D2A51D34700F3303C /* LoadingView.swift */,
 			);
 			path = View;
@@ -253,7 +250,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint && swiftlint --fix\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -267,11 +264,10 @@
 				30CBFB8B2A51D2F000F3303C /* ErrorView.swift in Sources */,
 				30CBFB972A531CA500F3303C /* LocationManager.swift in Sources */,
 				30CBFB872A4EE70C00F3303C /* ImageModel.swift in Sources */,
-				30E8A3DB2A59D12B0042BC6F /* WeatherView.swift in Sources */,
 				3069164C2A5C5EB200118B87 /* ImageRemote.swift in Sources */,
 				3069164E2A5C619100118B87 /* RoundIcon.swift in Sources */,
 				306916482A5C422900118B87 /* Alert.swift in Sources */,
-				30CBFB722A4DEDB700F3303C /* ContentView.swift in Sources */,
+				30CBFB722A4DEDB700F3303C /* WeatherView.swift in Sources */,
 				3069164A2A5C5E1700118B87 /* SearchText.swift in Sources */,
 				30CBFB8E2A51D34700F3303C /* LoadingView.swift in Sources */,
 				30CBFB802A4E272500F3303C /* WeatherModel.swift in Sources */,
@@ -406,7 +402,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"WeatherApp/Preview Content\"";
 				DEVELOPMENT_TEAM = RNQNWA79SV;
 				ENABLE_PREVIEWS = YES;
@@ -424,8 +420,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kaffka.WeatherApp;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anastasia.lenina.WeatherApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -439,7 +435,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"WeatherApp/Preview Content\"";
 				DEVELOPMENT_TEAM = RNQNWA79SV;
 				ENABLE_PREVIEWS = YES;
@@ -457,8 +453,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kaffka.WeatherApp;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anastasia.lenina.WeatherApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

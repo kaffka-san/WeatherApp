@@ -28,6 +28,7 @@ struct SearchText: View {
                     weatherVM.getData(using: searchedText)
                     searchedText = ""
                 }
+                .padding()
             TextField("Search", text: $searchedText)
                 .onSubmit {
                     weatherVM.getData(using: searchedText)
@@ -40,8 +41,8 @@ struct SearchText: View {
             self.hideKeyboard()
         }
 
-        .frame(width: 300, height: 25)
-        .padding(.horizontal, 9)
+        .frame(width: 320, height: 25)
+        //.padding(.horizontal, 9)
         .padding(.vertical, 7)
         .background(
             RoundedRectangle(cornerRadius: 35)

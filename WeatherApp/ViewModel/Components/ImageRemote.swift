@@ -9,10 +9,17 @@ import SwiftUI
 
 final class ImageLoader: ObservableObject {
     @Published var image: Image?
+    @Published var isLoadingImg = false
     func load(from urlString: String) {
+        isLoadingImg = true
         NetworkManager.shared.downloadImage(fromUrlString: urlString) { uiImage in
-            guard let uiImage else {return}
+            guard let uiImage else {
+                self.isLoadingImg = false
+                return
+
+            }
             DispatchQueue.main.async {
+                self.isLoadingImg = false
                 self.image = Image(uiImage: uiImage)
                 print("dispatch image on main thread")
             }
@@ -26,7 +33,7 @@ struct ImageRem: View {
     }
 }
 struct ImageRemote: View {
-   // @State private var imageOpacity = 0.0
+    // @State private var imageOpacity = 0.0
     @Binding var animationOpacity: Double
     @StateObject var imageLoader = ImageLoader()
     let imageUrl: String
@@ -35,14 +42,26 @@ struct ImageRemote: View {
         self.imageUrl = imageUrl
     }
     var body: some View {
+        ZStack {
+            if imageLoader.isLoadingImg {
 
-        ImageRem(image: imageLoader.image)
-            .onAppear {
-                imageLoader.load(from: imageUrl)
-                print("on appear")
+                Rectangle()
+                    .fill(Color.lightPurple.gradient)
+                    .ignoresSafeArea()
+                 ProgressView()
+
+            } else if !imageLoader.isLoadingImg {
+                ImageRem(image: imageLoader.image)
+
             }
-            .opacity(animationOpacity)
-            .animation( .easeIn(duration: 2), value: animationOpacity)
+        }
+        .onAppear {
+            imageLoader.load(from: imageUrl)
+            print("on appear")
+        }
+
+        // .opacity(animationOpacity)
+         // .animation( .easeIn(duration: 2), value: animationOpacity)
     }
 }
 

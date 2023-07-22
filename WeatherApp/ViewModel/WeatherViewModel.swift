@@ -44,7 +44,7 @@ class WeatherViewModel: ObservableObject {
         } else if !isLoadingImg && !isLoading && errorMessage == nil && (errorMessageImage != nil) {
             print("StateApp: data loaded")
             return StateApp.loadData
-        } else {
+        } else if !isLoadingImg && !isLoading && errorMessage == nil && errorMessageImage == nil && !urlWeather.isEmpty {
             print("StateApp: all loaded")
             return StateApp.loadDataAndImage
         }
@@ -72,17 +72,17 @@ class WeatherViewModel: ObservableObject {
         default:
             return
         }
-
     }
 
     func prepareString(str: String) -> String {
         let trimmedStr = str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         if let encodedTrimmedStr = trimmedStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-            return encodedTrimmedStr
+            // return encodedTrimmedStr
+            return trimmedStr
         }
         return ""
     }
-    func createImgUrl (cityNameSearched: String) {
+    func createImgUrl(cityNameSearched: String) {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "api.unsplash.com"
@@ -116,6 +116,7 @@ class WeatherViewModel: ObservableObject {
         }
 
         if let urlString = components.string {
+            print("weather url: \(urlWeather)")
             urlWeather = urlString
         }
     }
@@ -133,13 +134,13 @@ class WeatherViewModel: ObservableObject {
                                                ?? weatherModel.sys.country,
                                                temp: String(format: "%.f°", weatherModel.main.temp),
                                                iconName: self.getIcon(id: weatherModel.weather[0].id ),
-                                               humidity: String(format: "%.f", weatherModel.main.humidity),
-                                               pressure: String(format: "%.f", weatherModel.main.pressure),
+                                               humidity: String(format: "%.f\("%")", weatherModel.main.humidity),
+                                               pressure: String(format: "%.f hPa", weatherModel.main.pressure),
                                                feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
                                                description: weatherModel.weather[0].description.capitalized)
             } catch let apiError as APIError {
                 self.errorMessage = apiError.localisedDescription
-                print("error get weather data \(self.errorMessage)")
+                print("error get weather data \(String(describing: self.errorMessage))")
 
             }
         }

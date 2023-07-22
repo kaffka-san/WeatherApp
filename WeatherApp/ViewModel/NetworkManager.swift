@@ -47,7 +47,7 @@ final class NetworkManager {
         }
         let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
             guard let data, let image = UIImage(data: data) else {
-                print("async img failed \(error)")
+                print("async img failed \(String(describing: error))")
                 completed(nil)
                 return
             }
