@@ -134,7 +134,7 @@ class WeatherViewModel: ObservableObject {
                                                ?? weatherModel.sys.country,
                                                temp: String(format: "%.f°", weatherModel.main.temp),
                                                iconName: self.getIcon(id: weatherModel.weather[0].id ),
-                                               humidity: String(format: "%.f\("%")", weatherModel.main.humidity),
+                                               humidity: String(format: "%.f%%", weatherModel.main.humidity),
                                                pressure: String(format: "%.f hPa", weatherModel.main.pressure),
                                                feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
                                                description: weatherModel.weather[0].description.capitalized)

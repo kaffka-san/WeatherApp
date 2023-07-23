@@ -97,10 +97,12 @@ private extension WeatherView {
                     .foregroundColor(.white)
                     .font(.system(size: 40, weight: .regular))
                     .multilineTextAlignment(.center)
+                    .padding(.vertical, 5)
                 Text(weatherVM.weatherData.countryName)
                     .foregroundColor(.white)
                     .font(.system(size: 25, weight: .thin))
                     .multilineTextAlignment(.center)
+
                 HStack {
                     Image(systemName: weatherVM.weatherData.iconName)
                         .renderingMode(.original)
@@ -120,7 +122,7 @@ private extension WeatherView {
             .backgroundBlur(radius: 20, opaque: true)
             .background(Color.darkPurple.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 40))
-            .padding(.vertical, UIScreen.main.bounds.height * 0.03)
+            .padding(.vertical, UIScreen.main.bounds.height * 0.025)
 
             weatherInfo
                 .padding(.vertical, UIScreen.main.bounds.height * 0.04)
@@ -151,10 +153,10 @@ private extension WeatherView {
     }
     private var weatherInfo: some View {
         HStack(spacing: 10) {
-            RoundIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLike,
+            RectangleIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLike,
                       textTitle: "Feels like")
-            RoundIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity, textTitle: "Humidity")
-            RoundIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.pressure, textTitle: "Pressure")
+            RectangleIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity, textTitle: "Humidity")
+            RectangleIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.pressure, textTitle: "Pressure")
         }
     }
 }
