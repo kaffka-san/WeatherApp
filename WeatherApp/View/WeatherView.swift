@@ -12,30 +12,35 @@ import Combine
 struct WeatherView: View {
     @StateObject var weatherVM = WeatherViewModel()
     @State var animationOpacity: Double = 0.0
+    @State var searchedText = ""
+    @ObservedObject private var autocomplete = AutocompleteObject()
+    @Environment(\.dismissSearch) var dismissSearch
     var body: some View {
         NavigationStack {
-            ZStack {
-                Rectangle().fill(Color.lightPurple.gradient)
-                    .ignoresSafeArea()
-                background
-                ScrollView {
-                    SearchText(weatherVM: weatherVM)
-                        .padding(.vertical, UIScreen.main.bounds.height * 0.01)
-                    if weatherVM.stateApp == .empty {
 
-                    } else if weatherVM.stateApp == .loading {
-                        LoadingView()
-                            .padding(.vertical, UIScreen.main.bounds.height * 0.329)
-                    } else if weatherVM.stateApp == .error {
-                        VStack {
-                            Spacer()
-                            ErrorView(weatherVM: weatherVM)
-                                .padding(.vertical, UIScreen.main.bounds.height * 0.329)
-                            Spacer()
-                        }
-                    } else if weatherVM.stateApp == .loadData || weatherVM.stateApp == .loadDataAndImage {
-                        content
-                    }
+            ZStack {
+                List{}
+               // Rectangle().fill(Color.lightPurple.gradient)
+                  //  .ignoresSafeArea()
+                background
+
+                ScrollView  {
+
+                     if weatherVM.stateApp == .empty {
+
+                     } else if weatherVM.stateApp == .loading {
+                     LoadingView()
+                     .padding(.vertical, UIScreen.main.bounds.height * 0.329)
+                     } else if weatherVM.stateApp == .error {
+                     VStack {
+                     Spacer()
+                     ErrorView(weatherVM: weatherVM)
+                     .padding(.vertical, UIScreen.main.bounds.height * 0.329)
+                     Spacer()
+                     }
+                     } else if weatherVM.stateApp == .loadData || weatherVM.stateApp == .loadDataAndImage {
+                     content
+                     }
                     Button {
                         weatherVM.getLocation()
                     }
@@ -56,18 +61,51 @@ struct WeatherView: View {
                           dismissButton: alertItem.dismissButton)
                 }
                 .padding(.vertical, UIScreen.main.bounds.height * 0.035)
+                .padding(.horizontal, 20 )
                 }
+
                 .scrollIndicators(.hidden)
                 .scrollDismissesKeyboard(.immediately)
             }
+
             .ignoresSafeArea(.keyboard)
             .preferredColorScheme(.dark)
+            .navigationBarTitleDisplayMode(.inline)
+            // .searchable(text: $searchedText)
+
         }
+        .onChange(of: searchedText) { newValue in
+            autocomplete.autocomplete(searchedText)
+
+        }
+        .searchable(text: $searchedText , placement: .toolbar  , suggestions: {
+            ForEach(autocomplete.suggestions, id: \.self) { suggestion in
+                Text(suggestion)
+                    .searchCompletion(suggestion)
+                    //.foregroundColor(.white)
+                    //.listRowBackground(Color.black.blendMode(.overlay))
+
+            }
+
+        }
+
+        )
+        .onSubmit(of: .search) { // 1
+                print("submit")
+            weatherVM.getData(using: searchedText)
+            searchedText = ""
+            }
+
+
+
+        .accentColor(.white)
         .onAppear {
             // weatherVM.getLocation()
             weatherVM.getData(using: "London")
         }
+
     }
+
     var searchField: some View {
         SearchText(weatherVM: weatherVM)
     }
@@ -78,9 +116,17 @@ struct WeatherView: View {
             Rectangle().fill(Color.darkPurple.gradient.opacity(0.8))
             Rectangle().fill(Color.lightPurple.gradient.blendMode(.lighten).opacity(0.4))
             if weatherVM.stateApp == .loadDataAndImage {
-                ImageRemote( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
-                    .scaledToFill()
-                Rectangle().fill(Color.black.opacity(0.3).blendMode(.multiply))
+                ZStack {
+                    Rectangle()
+                        .overlay {
+                            ImageRemote( animationOpacity: $animationOpacity, imageUrl: weatherVM.urlImg)
+                                .scaledToFill()
+                        }
+
+
+
+                    Rectangle().fill(Color.black.opacity(0.3).blendMode(.multiply))
+                }
             }
         }
         .ignoresSafeArea()
@@ -126,7 +172,7 @@ private extension WeatherView {
 
             weatherInfo
                 .padding(.vertical, UIScreen.main.bounds.height * 0.04)
-                .padding(.horizontal, 60)
+                .padding(.horizontal, 20)
             Text(weatherVM.weatherData.description)
                 .foregroundColor(.white)
                 .font(.system(size: 20, weight: .thin))
@@ -154,7 +200,7 @@ private extension WeatherView {
     private var weatherInfo: some View {
         HStack(spacing: 10) {
             RectangleIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLike,
-                      textTitle: "Feels like")
+                          textTitle: "Feels like")
             RectangleIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity, textTitle: "Humidity")
             RectangleIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.pressure, textTitle: "Pressure")
         }

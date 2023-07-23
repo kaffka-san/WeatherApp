@@ -16,7 +16,7 @@ extension View {
 #endif
 struct SearchText: View {
     @State private var searchedText: String = ""
-    @State private var isImageLoading = false
+    // @State private var isImageLoading = false
     @ObservedObject var weatherVM: WeatherViewModel
     var body: some View {
         HStack(spacing: 2) {

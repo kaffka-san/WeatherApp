@@ -33,19 +33,19 @@ class WeatherViewModel: ObservableObject {
 
     var stateApp: StateApp {
         if errorMessage == nil && isLoading && isLoadingImg && urlWeather.isEmpty {
-            print("StateApp: Empty")
+         //   print("StateApp: Empty")
             return StateApp.empty
         } else if errorMessage != nil {
-            print("StateApp: error")
+         //   print("StateApp: error")
             return StateApp.error
         } else if  (isLoading || isLoadingImg) && (errorMessage == nil && errorMessageImage == nil) {
-            print("StateApp: loading")
+         //   print("StateApp: loading")
             return StateApp.loading
         } else if !isLoadingImg && !isLoading && errorMessage == nil && (errorMessageImage != nil) {
-            print("StateApp: data loaded")
+          //  print("StateApp: data loaded")
             return StateApp.loadData
         } else if !isLoadingImg && !isLoading && errorMessage == nil && errorMessageImage == nil && !urlWeather.isEmpty {
-            print("StateApp: all loaded")
+          //  print("StateApp: all loaded")
             return StateApp.loadDataAndImage
         }
         return StateApp.empty
