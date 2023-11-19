@@ -2,7 +2,6 @@
 import Foundation
 
 struct CitiesFile: CitiesSource {
-
     let location: URL
 
     init(location: URL) {

@@ -44,7 +44,6 @@ struct ImageRemote: View {
     var body: some View {
         ZStack {
             if imageLoader.isLoadingImg {
-
                 Rectangle()
                     .fill(Color.lightPurple.gradient)
                     .ignoresSafeArea()
@@ -67,6 +66,6 @@ struct ImageRemote: View {
 
 struct ImageLoader_Previews: PreviewProvider {
     static var previews: some View {
-        ImageRemote(imageUrl: "")
+        ImageRemote(imageUrl: "https://api.unsplash.com/search/photos?client_id=gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE&query=san%20francisco&page=1")
     }
 }

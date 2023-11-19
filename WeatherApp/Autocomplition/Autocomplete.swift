@@ -2,19 +2,15 @@
 import Combine
 import Foundation
 
-
 @MainActor
 final class AutocompleteObject: ObservableObject {
-
     let delay: TimeInterval = 0.3
-
     @Published var suggestions: [String] = []
 
     init() {
     }
 
     private let citiesCache = CitiesCache(source: CitiesFile()!)
-
     private var task: Task<Void, Never>?
 
     func autocomplete(_ text: String) {
@@ -28,7 +24,6 @@ final class AutocompleteObject: ObservableObject {
 
         task = Task {
             await Task.sleep(UInt64(delay * 1_000_000_000.0))
-
             guard !Task.isCancelled else {
                 return
             }

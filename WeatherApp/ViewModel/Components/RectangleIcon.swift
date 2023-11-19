@@ -20,7 +20,6 @@ struct RectangleIcon: View {
                 Text(textTitle)
                     .font(.system(size: 16, weight: .regular))
                     .foregroundColor(.white)
-                    //.multilineTextAlignment(.center)
             }
 
             Text(textInput)

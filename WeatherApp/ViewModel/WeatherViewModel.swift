@@ -77,7 +77,6 @@ class WeatherViewModel: ObservableObject {
     func prepareString(str: String) -> String {
         let trimmedStr = str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         if let encodedTrimmedStr = trimmedStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-            // return encodedTrimmedStr
             return trimmedStr
         }
         return ""
@@ -94,6 +93,7 @@ class WeatherViewModel: ObservableObject {
         components.queryItems = [apiKey, city, page]
         if let url = components.string {
             urlFullImg = url
+            print("imageURL: \(urlFullImg)")
         }
     }
     func createUrlWeather (cityNameSearched: String? = "", coordinates: CLLocationCoordinate2D? = nil ) {
