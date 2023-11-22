@@ -27,17 +27,19 @@ struct WeatherView: View {
             content
                 .accentColor(.white)
                 .onAppear {
-                    weatherVM.getData(using: "London")
+                    weatherVM.getLocation()
                 }
-                .searchable(text: $searchedText, placement: .navigationBarDrawer(displayMode: .always), suggestions: {
-                    ForEach(autocomplete.suggestions, id: \.self) { suggestion in
-                        Text(suggestion)
-                            .searchCompletion(suggestion)
+                .searchable(
+                    text: $searchedText,
+                    placement: .navigationBarDrawer(displayMode: .automatic),
+                    suggestions: {
+                        ForEach(autocomplete.suggestions, id: \.self) { suggestion in
+                            Text(suggestion)
+                                .searchCompletion(suggestion)
+                        }
                     }
-                }
                 )
-                .onSubmit(of: .search) { // 1
-                    print("submit")
+                .onSubmit(of: .search) {
                     weatherVM.getData(using: searchedText)
                     hideKeyboard()
                     searchedText = ""
@@ -53,12 +55,10 @@ struct WeatherView: View {
 private extension WeatherView {
     var content: some View {
         ZStack {
-            if weatherVM.stateApp == .empty {
-            }
+            if weatherVM.stateApp == .empty {}
             else if weatherVM.stateApp == .loading {
                 ProgressView()
-            }
-            else if weatherVM.stateApp == .error {
+            } else if weatherVM.stateApp == .error {
                 VStack {
                     Spacer()
                     ErrorView(weatherVM: weatherVM)
@@ -66,7 +66,6 @@ private extension WeatherView {
                     Spacer()
                 }
             } else if weatherVM.stateApp == .loadData || weatherVM.stateApp == .loadDataAndImage {
-                backgroundImage
                 scrollView
             }
         }
@@ -75,7 +74,11 @@ private extension WeatherView {
     var scrollView: some View {
         ScrollView {
             weatherData
-                .scrollIndicators(.hidden)
+        }
+        .scrollIndicators(.hidden)
+        .background {
+            backgroundImage
+                .ignoresSafeArea()
         }
         .ignoresSafeArea(.keyboard)
         .edgesIgnoringSafeArea(.horizontal)
@@ -84,59 +87,66 @@ private extension WeatherView {
                   message: alertItem.message,
                   dismissButton: alertItem.dismissButton)
         }
+        .transition(.opacity.animation(.easeInOut(duration: 0.8)))
     }
     var backgroundImage: some View {
-        ZStack {
-            Rectangle().fill(Color.darkPurple.gradient.opacity(0.8))
-            Rectangle().fill(Color.lightPurple.gradient.blendMode(.lighten).opacity(0.4))
-            if weatherVM.stateApp == .loadDataAndImage {
-                ZStack {
-                    AsyncImage(url: URL(string: weatherVM.urlImg)) { image in
-                        image.image?
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: UIScreen.main.bounds.width)
-                            .transition(.opacity.animation(.easeInOut(duration: 0.6)))
-                    }
-                    Rectangle().fill(Color.black.opacity(0.3).blendMode(.multiply))
-                }
+        AsyncImage(url: URL(string: weatherVM.urlImg)) { image in
+            ZStack {
+                image.image?
+                    .resizable()
+                    .scaledToFill()
+                Rectangle().fill(Color.darkPurple.gradient.opacity(0.3).blendMode(.multiply))
             }
+            .frame(width: UIScreen.main.bounds.width)
+            .ignoresSafeArea()
+            .ignoresSafeArea(.keyboard)
+            .brightness(-0.2)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea()
+    }
+
+    var cityLabel: some View {
+        Text(weatherVM.weatherData.cityName)
+            .foregroundColor(.white)
+            .font(.system(size: 40, weight: .regular))
+            .multilineTextAlignment(.center)
+            .padding(.vertical, 5)
+    }
+
+    var countryLabel: some View {
+        Text(weatherVM.weatherData.countryName)
+            .foregroundColor(.white)
+            .font(.system(size: 25, weight: .thin))
+            .multilineTextAlignment(.center)
+    }
+
+    var temperatureValueIcon: some View {
+        HStack {
+            Image(systemName: weatherVM.weatherData.iconName)
+                .renderingMode(.original)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .padding()
+            Text(weatherVM.weatherData.temp)
+                .foregroundColor(.white)
+                .font(.system(size: 70, weight: .thin))
+                .padding()
+        }
+        .frame(maxWidth: .infinity)
     }
 
     var cityCard: some View {
         VStack {
-            Text(weatherVM.weatherData.cityName)
-                .foregroundColor(.white)
-                .font(.system(size: 40, weight: .regular))
-                .multilineTextAlignment(.center)
-                .padding(.vertical, 5)
-            Text(weatherVM.weatherData.countryName)
-                .foregroundColor(.white)
-                .font(.system(size: 25, weight: .thin))
-                .multilineTextAlignment(.center)
-
-            HStack {
-                Image(systemName: weatherVM.weatherData.iconName)
-                    .renderingMode(.original)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .padding()
-                Text(weatherVM.weatherData.temp)
-                    .foregroundColor(.white)
-                    .font(.system(size: 70, weight: .thin))
-                    .padding()
-            }
-            .frame(maxWidth: .infinity)
+            cityLabel
+            countryLabel
+            temperatureValueIcon
         }
         .padding(.vertical, UIScreen.main.bounds.height * 0.03)
-        .backgroundBlur(radius: 20, opaque: true)
-        .background(Color.darkPurple.opacity(0.5))
+        .backgroundBlur(radius: 15, opaque: true)
+        .background(Color.darkPurple.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 40))
         .padding(.horizontal, 36)
+        .padding(.bottom, 60)
     }
 
     var textLabel: some View {
@@ -144,6 +154,7 @@ private extension WeatherView {
             .foregroundColor(.white)
             .font(.system(size: 20, weight: .thin))
             .padding(.vertical, UIScreen.main.bounds.height * 0.0)
+            .padding(.bottom, 40)
     }
 
     var getLocationButton: some View {
@@ -167,25 +178,19 @@ private extension WeatherView {
         VStack(spacing: 0) {
             weatherInfo
             textLabel
-                .padding(.bottom, 40)
             getLocationButton
-
         }
+        .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background {
-            Color.black.opacity(0.2)
-                .background(Color.lightPurple.gradient.opacity(0.2))
-                .cornerRadius(30)
-
-        }
+        .backgroundBlur(radius: 6, opaque: true)
+        .background(Color.darkPurple.opacity(0.2))
+        .cornerRadius(30)
     }
     var weatherData: some View {
         // MMain Weather Data
         ZStack {
             VStack(spacing: 0) {
                 cityCard
-                //.padding(.top, 30)
-                    .padding(.bottom, 60)
                 statisticsCard
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -207,6 +212,8 @@ private extension WeatherView {
 
     func configNavigationBar() {
         UINavigationBar.appearance().barTintColor = .clear
+        UINavigationBar.appearance().isTranslucent = true
+        UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
     }
 

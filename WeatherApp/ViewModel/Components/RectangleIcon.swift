@@ -27,9 +27,9 @@ struct RectangleIcon: View {
                 .font(.system(size: 22, weight: .thin))
         }
         .frame(width: 93, height: 93)
-         .padding(10)
+        .padding(10)
         .backgroundBlur(radius: 15, opaque: true)
-        .background(Color.lightPurple.gradient.opacity(0.3))
+        .background(Color.lightPurple.gradient.opacity(0.8))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 }

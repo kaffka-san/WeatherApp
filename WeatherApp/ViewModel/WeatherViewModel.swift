@@ -127,12 +127,12 @@ class WeatherViewModel: ObservableObject {
         errorMessage = nil
         Task {
             do {
-                let weatherModel = try await NetworkManager.shared.fetchData(WeatherModel.self, url: self.urlWeather)
+                let weatherModel = try await NetworkManager.shared.fetchData(Weather.self, url: self.urlWeather)
                 isLoading = false
                 self.weatherData = WeatherData(cityName: weatherModel.name,
-                                               countryName: Locale.current.localizedString(forRegionCode: weatherModel.sys.country)
-                                               ?? weatherModel.sys.country,
-                                               temp: String(format: "%.f°", weatherModel.main.temp),
+                                               countryName: Locale.current.localizedString(forRegionCode: weatherModel.system.country)
+                                               ?? weatherModel.system.country,
+                                               temp: String(format: "%.f°", weatherModel.main.temperature),
                                                iconName: self.getIcon(id: weatherModel.weather[0].id ),
                                                humidity: String(format: "%.f%%", weatherModel.main.humidity),
                                                pressure: String(format: "%.f hPa", weatherModel.main.pressure),
@@ -151,7 +151,7 @@ class WeatherViewModel: ObservableObject {
         errorMessageImage = nil
         Task {
             do {
-                let imageModel = try await NetworkManager.shared.fetchData(ImageModel.self, url: urlFullImg)
+                let imageModel = try await NetworkManager.shared.fetchData(ImageData.self, url: urlFullImg)
                 isLoadingImg = false
                 if  !imageModel.results.isEmpty {
                     self.urlImg = imageModel.results[0].urls["regular"] ?? ""

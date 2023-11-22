@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ImageModel: Codable {
+struct ImageData: Codable {
     let results: [ResultImgae]
 }
 struct ResultImgae: Codable {

@@ -17,10 +17,3 @@ struct WeatherData {
     var feelsLike: String
     var description: String
 }
-
-// class WeatherDataContainer: ObservableObject {
-//    @Published var weatherDataContainer : WeatherData
-//    init(weatherDataContainer: WeatherData) {
-//        self.weatherDataContainer = weatherDataContainer
-//    }
-// }

@@ -7,7 +7,6 @@
 
 import Foundation
 enum APIError: Error {
-
     case badURL
     case badResponse(statusCode: Int)
     case url(URLError?)

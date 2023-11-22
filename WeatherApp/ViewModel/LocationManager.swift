@@ -41,14 +41,9 @@ class LocationDataManager: NSObject, ObservableObject, CLLocationManagerDelegate
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        // Insert code to handle location updates
-    }
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {}
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("error location manager: \(error.localizedDescription)")
-    }
-
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
 }
 extension CLLocation {
     func fetchCityAndCountry(completion: @escaping (_ city: String?, _ country: String?, _ error: Error?) -> Void) {
