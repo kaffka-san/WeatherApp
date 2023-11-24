@@ -25,5 +25,4 @@ enum APIError: Error {
             return "bad response with status code \(statusCode)"
         }
     }
-
 }

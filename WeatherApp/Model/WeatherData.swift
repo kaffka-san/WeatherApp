@@ -10,7 +10,7 @@ import Foundation
 struct WeatherData {
     var cityName: String
     var countryName: String
-    var temp: String
+    var temperature: String
     var iconName: String
     var humidity: String
     var pressure: String

@@ -21,7 +21,6 @@ struct RectangleIcon: View {
                     .font(.system(size: 16, weight: .regular))
                     .foregroundColor(.white)
             }
-
             Text(textInput)
                 .foregroundColor(.white.opacity(0.8))
                 .font(.system(size: 22, weight: .thin))

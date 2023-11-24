@@ -10,16 +10,36 @@ import CoreLocation
 import CoreLocationUI
 
 class WeatherViewModel: ObservableObject {
+    let service = NetworkManager()
+    var urlWeather: String = ""
+    var urlFullImg: String = ""
 
-    @Published var weatherData = WeatherData(cityName: "",
-                                             countryName: "",
-                                             temp: "",
-                                             iconName: "",
-                                             humidity: "",
-                                             pressure: "",
-                                             feelsLike: "",
-                                             description: "")
+    var stateApp: StateApp {
+        if errorMessage != nil {
+            return .error
+        }
+        if isLoading || isLoadingImg {
+            return .loading
+        }
+        if errorMessageImage != nil {
+            return .loadData
+        }
+        if !urlWeather.isEmpty {
+            return .loadDataAndImage
+        }
+        return .empty
+    }
 
+    @Published var weatherData = WeatherData(
+        cityName: "",
+        countryName: "",
+        temperature: "",
+        iconName: "",
+        humidity: "",
+        pressure: "",
+        feelsLike: "",
+        description: ""
+    )
     @Published var urlImg: String = ""
     @Published var isLoading: Bool = false
     @Published var isLoadingImg = false
@@ -28,46 +48,21 @@ class WeatherViewModel: ObservableObject {
     @Published var alertItem: AlertItem?
     @Published var locationDataManager = LocationDataManager()
 
-    var urlWeather: String = ""
-    var urlFullImg: String = ""
-
-    var stateApp: StateApp {
-        if errorMessage == nil && isLoading && isLoadingImg && urlWeather.isEmpty {
-         //   print("StateApp: Empty")
-            return StateApp.empty
-        } else if errorMessage != nil {
-         //   print("StateApp: error")
-            return StateApp.error
-        } else if  (isLoading || isLoadingImg) && (errorMessage == nil && errorMessageImage == nil) {
-         //   print("StateApp: loading")
-            return StateApp.loading
-        } else if !isLoadingImg && !isLoading && errorMessage == nil && (errorMessageImage != nil) {
-          //  print("StateApp: data loaded")
-            return StateApp.loadData
-        } else if !isLoadingImg && !isLoading && errorMessage == nil && errorMessageImage == nil && !urlWeather.isEmpty {
-          //  print("StateApp: all loaded")
-            return StateApp.loadDataAndImage
-        }
-        return StateApp.empty
-    }
-
-    let service = NetworkManager()
-
     @MainActor
     func getLocation() {
         switch locationDataManager.locationManager.authorizationStatus {
-        case .authorizedWhenInUse:  // Location services are available.
+        case .authorizedWhenInUse:
             if let location = locationDataManager.locationManager.location?.coordinate {
                 let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
                 locationCL.fetchCityAndCountry { city, country, error in
                     guard let city = city, let country = country, error == nil else { return }
-                    print("\(city), \(country)")  // Rio de Janeiro, Brazil
+                    print("\(city), \(country)")
                     self.getData(using: city, coordinates: location)
                 }
             }
-        case .restricted, .denied:  // Location services currently unavailable.
+        case .restricted, .denied:
             alertItem = AlertContext.locationRestricted
-        case .notDetermined:        // Authorisation not determined yet.
+        case .notDetermined:
             alertItem = AlertContext.locationNotDetermined
         default:
             return
@@ -75,29 +70,28 @@ class WeatherViewModel: ObservableObject {
     }
 
     func prepareString(str: String) -> String {
-        let trimmedStr = str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        if let encodedTrimmedStr = trimmedStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-            return trimmedStr
-        }
-        return ""
+        return  str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
+
     func createImgUrl(cityNameSearched: String) {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "api.unsplash.com"
         components.path = "/search/photos"
-        let apiKey = URLQueryItem(name: "client_id", value: "gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE")
-        let cityPrepared = prepareString(str: cityNameSearched)
-        let city = URLQueryItem(name: "query", value: cityPrepared)
-        let page = URLQueryItem(name: "page", value: "1")
-        components.queryItems = [apiKey, city, page]
-        if let url = components.string {
-            urlFullImg = url
-            print("imageURL: \(urlFullImg)")
-        }
-    }
-    func createUrlWeather (cityNameSearched: String? = "", coordinates: CLLocationCoordinate2D? = nil ) {
 
+        let cityPrepared = prepareString(str: cityNameSearched)
+        let apiKey = "gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE"
+        
+        components.queryItems = [
+            URLQueryItem(name: "client_id", value: apiKey),
+            URLQueryItem(name: "query", value: cityPrepared),
+            URLQueryItem(name: "page", value: "1")
+        ]
+
+        urlFullImg = components.url?.absoluteString ?? ""
+    }
+
+    func createUrlWeather (cityNameSearched: String? = "", coordinates: CLLocationCoordinate2D? = nil ) {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "api.openweathermap.org"
@@ -125,19 +119,12 @@ class WeatherViewModel: ObservableObject {
     func fetchAsync() {
         isLoading = true
         errorMessage = nil
-        Task {
+        Task {  [weak self] in
+            guard let self else { return }
             do {
                 let weatherModel = try await NetworkManager.shared.fetchData(Weather.self, url: self.urlWeather)
                 isLoading = false
-                self.weatherData = WeatherData(cityName: weatherModel.name,
-                                               countryName: Locale.current.localizedString(forRegionCode: weatherModel.system.country)
-                                               ?? weatherModel.system.country,
-                                               temp: String(format: "%.f°", weatherModel.main.temperature),
-                                               iconName: self.getIcon(id: weatherModel.weather[0].id ),
-                                               humidity: String(format: "%.f%%", weatherModel.main.humidity),
-                                               pressure: String(format: "%.f hPa", weatherModel.main.pressure),
-                                               feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
-                                               description: weatherModel.weather[0].description.capitalized)
+                update(weatherModel)
             } catch let apiError as APIError {
                 self.errorMessage = apiError.localisedDescription
                 print("error get weather data \(String(describing: self.errorMessage))")
@@ -145,11 +132,27 @@ class WeatherViewModel: ObservableObject {
             }
         }
     }
+
+    @MainActor private func update(_ weatherModel: Weather) {
+        weatherData = WeatherData(
+            cityName: weatherModel.name,
+            countryName: Locale.current.localizedString(forRegionCode: weatherModel.system.country)
+            ?? weatherModel.system.country,
+            temperature: String(format: "%.f°", weatherModel.main.temperature),
+            iconName: getIcon(id: weatherModel.weather[0].id ),
+            humidity: String(format: "%.f%%", weatherModel.main.humidity),
+            pressure: String(format: "%.f hPa", weatherModel.main.pressure),
+            feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
+            description: weatherModel.weather[0].description.capitalized
+        )
+    }
+
     @MainActor
     func fetchAsyncImg() {
         isLoadingImg = true
         errorMessageImage = nil
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 let imageModel = try await NetworkManager.shared.fetchData(ImageData.self, url: urlFullImg)
                 isLoadingImg = false
@@ -158,15 +161,15 @@ class WeatherViewModel: ObservableObject {
                 }
             } catch {
                 isLoadingImg = false
-                print("error get image \( error.localizedDescription )")
+                print("error get image \(error.localizedDescription)")
                 self.errorMessageImage = error.localizedDescription
             }
         }
     }
     @MainActor
-    func getData(using cityNameSearched: String, coordinates: CLLocationCoordinate2D? = nil) {
-        createUrlWeather(cityNameSearched: cityNameSearched, coordinates: coordinates)
-        createImgUrl(cityNameSearched: cityNameSearched)
+    func getData(using cityName: String, coordinates: CLLocationCoordinate2D? = nil) {
+        createUrlWeather(cityNameSearched: cityName, coordinates: coordinates)
+        createImgUrl(cityNameSearched: cityName)
         fetchAsync()
         fetchAsyncImg()
         isLoading = true
@@ -185,6 +188,7 @@ class WeatherViewModel: ObservableObject {
         }
     }
 }
+
 enum WeatherIcon: String, CaseIterable {
     case storm = "cloud.bolt.rain.fill"
     case lightRain = "cloud.drizzle.fill"
@@ -195,6 +199,7 @@ enum WeatherIcon: String, CaseIterable {
     case cloud = "cloud.fill"
     case empty = ""
 }
+
 enum StateApp {
     case empty
     case loadData

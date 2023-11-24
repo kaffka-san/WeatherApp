@@ -8,8 +8,9 @@
 import Foundation
 
 struct ImageData: Codable {
-    let results: [ResultImgae]
+    let results: [ResultImage]
 }
-struct ResultImgae: Codable {
+
+struct ResultImage: Codable {
     let urls: [String: String]
 }

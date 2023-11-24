@@ -11,7 +11,7 @@ import Combine
 import UIKit
 
 struct WeatherView: View {
-    @StateObject var weatherVM = WeatherViewModel()
+    @StateObject var weatherViewModel = WeatherViewModel()
     @State var animationOpacity: Double = 0.0
     @State private var triggerValue: Bool = false
     @State var searchedText = ""
@@ -27,7 +27,7 @@ struct WeatherView: View {
             content
                 .accentColor(.white)
                 .onAppear {
-                    weatherVM.getLocation()
+                    weatherViewModel.getLocation()
                 }
                 .searchable(
                     text: $searchedText,
@@ -40,7 +40,7 @@ struct WeatherView: View {
                     }
                 )
                 .onSubmit(of: .search) {
-                    weatherVM.getData(using: searchedText)
+                    weatherViewModel.getData(using: searchedText)
                     hideKeyboard()
                     searchedText = ""
                     autocomplete.suggestions = []
@@ -55,17 +55,17 @@ struct WeatherView: View {
 private extension WeatherView {
     var content: some View {
         ZStack {
-            if weatherVM.stateApp == .empty {}
-            else if weatherVM.stateApp == .loading {
+            if weatherViewModel.stateApp == .empty {}
+            else if weatherViewModel.stateApp == .loading {
                 ProgressView()
-            } else if weatherVM.stateApp == .error {
+            } else if weatherViewModel.stateApp == .error {
                 VStack {
                     Spacer()
-                    ErrorView(weatherVM: weatherVM)
+                    ErrorView(weatherVM: weatherViewModel)
                         .padding(.vertical, UIScreen.main.bounds.height * 0.329)
                     Spacer()
                 }
-            } else if weatherVM.stateApp == .loadData || weatherVM.stateApp == .loadDataAndImage {
+            } else if weatherViewModel.stateApp == .loadData || weatherViewModel.stateApp == .loadDataAndImage {
                 scrollView
             }
         }
@@ -82,7 +82,7 @@ private extension WeatherView {
         }
         .ignoresSafeArea(.keyboard)
         .edgesIgnoringSafeArea(.horizontal)
-        .alert(item: $weatherVM.alertItem) { alertItem in
+        .alert(item: $weatherViewModel.alertItem) { alertItem in
             Alert(title: alertItem.title,
                   message: alertItem.message,
                   dismissButton: alertItem.dismissButton)
@@ -90,7 +90,7 @@ private extension WeatherView {
         .transition(.opacity.animation(.easeInOut(duration: 0.8)))
     }
     var backgroundImage: some View {
-        AsyncImage(url: URL(string: weatherVM.urlImg)) { image in
+        AsyncImage(url: URL(string: weatherViewModel.urlImg)) { image in
             ZStack {
                 image.image?
                     .resizable()
@@ -105,7 +105,7 @@ private extension WeatherView {
     }
 
     var cityLabel: some View {
-        Text(weatherVM.weatherData.cityName)
+        Text(weatherViewModel.weatherData.cityName)
             .foregroundColor(.white)
             .font(.system(size: 40, weight: .regular))
             .multilineTextAlignment(.center)
@@ -113,7 +113,7 @@ private extension WeatherView {
     }
 
     var countryLabel: some View {
-        Text(weatherVM.weatherData.countryName)
+        Text(weatherViewModel.weatherData.countryName)
             .foregroundColor(.white)
             .font(.system(size: 25, weight: .thin))
             .multilineTextAlignment(.center)
@@ -121,13 +121,13 @@ private extension WeatherView {
 
     var temperatureValueIcon: some View {
         HStack {
-            Image(systemName: weatherVM.weatherData.iconName)
+            Image(systemName: weatherViewModel.weatherData.iconName)
                 .renderingMode(.original)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
                 .padding()
-            Text(weatherVM.weatherData.temp)
+            Text(weatherViewModel.weatherData.temperature)
                 .foregroundColor(.white)
                 .font(.system(size: 70, weight: .thin))
                 .padding()
@@ -150,7 +150,7 @@ private extension WeatherView {
     }
 
     var textLabel: some View {
-        Text(weatherVM.weatherData.description)
+        Text(weatherViewModel.weatherData.description)
             .foregroundColor(.white)
             .font(.system(size: 20, weight: .thin))
             .padding(.vertical, UIScreen.main.bounds.height * 0.0)
@@ -159,7 +159,7 @@ private extension WeatherView {
 
     var getLocationButton: some View {
         Button {
-            weatherVM.getLocation()
+            weatherViewModel.getLocation()
         }
     label: {
         HStack {
@@ -201,10 +201,21 @@ private extension WeatherView {
     }
     private var weatherInfo: some View {
         HStack(spacing: 5) {
-            RectangleIcon(imageName: "thermometer.medium", textInput: weatherVM.weatherData.feelsLike,
-                          textTitle: "Feels like")
-            RectangleIcon(imageName: "humidity", textInput: weatherVM.weatherData.humidity, textTitle: "Humidity")
-            RectangleIcon(imageName: "gauge.medium", textInput: weatherVM.weatherData.pressure, textTitle: "Pressure")
+            RectangleIcon(
+                imageName: "thermometer.medium",
+                textInput: weatherViewModel.weatherData.feelsLike,
+                textTitle: "Feels like"
+            )
+            RectangleIcon(
+                imageName: "humidity",
+                textInput: weatherViewModel.weatherData.humidity,
+                textTitle: "Humidity"
+            )
+            RectangleIcon(
+                imageName: "gauge.medium",
+                textInput: weatherViewModel.weatherData.pressure,
+                textTitle: "Pressure"
+            )
         }
         .padding(.vertical, UIScreen.main.bounds.height * 0.04)
         .padding(.horizontal, 20)

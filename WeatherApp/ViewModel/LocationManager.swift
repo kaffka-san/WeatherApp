@@ -19,20 +19,17 @@ class LocationDataManager: NSObject, ObservableObject, CLLocationManagerDelegate
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         switch manager.authorizationStatus {
-        case .authorizedWhenInUse:  // Location services are available.
-            // Insert code here of what should happen when Location services are authorized
+        case .authorizedWhenInUse:
             authorizationStatus = .authorizedWhenInUse
             locationManager.requestLocation()
 
-        case .restricted:  // Location services currently unavailable.
-            // Insert code here of what should happen when Location services are NOT authorized
+        case .restricted:
             authorizationStatus = .restricted
 
-        case .denied:  // Location services currently unavailable.
-            // Insert code here of what should happen when Location services are NOT authorized
+        case .denied:
             authorizationStatus = .denied
 
-        case .notDetermined:        // Authorization not determined yet.
+        case .notDetermined:
             authorizationStatus = .notDetermined
             manager.requestWhenInUseAuthorization()
 
@@ -45,6 +42,7 @@ class LocationDataManager: NSObject, ObservableObject, CLLocationManagerDelegate
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {}
 }
+
 extension CLLocation {
     func fetchCityAndCountry(completion: @escaping (_ city: String?, _ country: String?, _ error: Error?) -> Void) {
         CLGeocoder().reverseGeocodeLocation(self) { completion($0?.first?.locality, $0?.first?.country, $1) }

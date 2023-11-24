@@ -12,14 +12,14 @@ class UIBackDropView: UIView {
         NSClassFromString("CABackdropLayer") ?? CALayer.self
     }
 }
+
 struct Backdrop: UIViewRepresentable {
     func makeUIView(context: Context) -> UIBackDropView {
         UIBackDropView()
     }
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-
-    }
+    func updateUIView(_ uiView: UIViewType, context: Context) {}
 }
+
 struct Blur: View {
     var radius: CGFloat = 3
     var opaque: Bool = false
