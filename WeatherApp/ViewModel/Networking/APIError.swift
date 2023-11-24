@@ -8,9 +8,9 @@
 import Foundation
 enum APIError: Error {
     case badURL
-    case badResponse(statusCode: Int)
+    case badResponse
     case url(URLError?)
-    case parsing(DecodingError?)
+    case parsing
     case unknown
 
     var localisedDescription: String {
@@ -19,10 +19,10 @@ enum APIError: Error {
         case .badURL: return "invalid URL"
         case .url(let error):
             return error?.localizedDescription ?? "url session error"
-        case .parsing(let error):
-            return "parsing error \(error?.localizedDescription ?? "")"
-        case .badResponse(statusCode: let statusCode):
-            return "bad response with status code \(statusCode)"
+        case .parsing:
+            return "parsing error"
+        case .badResponse:
+            return "bad response"
         }
     }
 }

@@ -21,7 +21,7 @@ final class NetworkManager {
         let (data, response) = try await URLSession.shared.data(from: url)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             print("T: error badResponse \(type)")
-            throw APIError.badResponse(statusCode: (response as? HTTPURLResponse)?.statusCode ?? 0)
+            throw APIError.badResponse
 
         }
         do {
@@ -31,7 +31,7 @@ final class NetworkManager {
             return try decoder.decode(T.self, from: data)
         } catch {
             print("error with api \(error)")
-            throw APIError.parsing(error as? DecodingError)
+            throw APIError.parsing
         }
     }
 
