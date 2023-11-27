@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3043EA992B10A9F700EF6ECC /* APIRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA942B10A9F600EF6ECC /* APIRouter.swift */; };
-		3043EA9A2B10A9F700EF6ECC /* PokemonsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA952B10A9F700EF6ECC /* PokemonsAPI.swift */; };
-		3043EA9B2B10A9F700EF6ECC /* PokemonsDataRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA962B10A9F700EF6ECC /* PokemonsDataRouter.swift */; };
+		3043EA9A2B10A9F700EF6ECC /* WeatherAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA952B10A9F700EF6ECC /* WeatherAPI.swift */; };
+		3043EA9B2B10A9F700EF6ECC /* WeatherDataRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA962B10A9F700EF6ECC /* WeatherDataRouter.swift */; };
 		3043EA9C2B10A9F700EF6ECC /* NetworkingExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA972B10A9F700EF6ECC /* NetworkingExtensions.swift */; };
 		3043EA9D2B10A9F700EF6ECC /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA982B10A9F700EF6ECC /* APIClient.swift */; };
 		3043EAA02B10AB8700EF6ECC /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EA9E2B10AB8700EF6ECC /* Router.swift */; };
@@ -17,7 +17,6 @@
 		3043EAA32B10AB9200EF6ECC /* URLRequestBuilding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043EAA22B10AB9200EF6ECC /* URLRequestBuilding.swift */; };
 		304EEC182A6D7FCC00749F60 /* cities in Resources */ = {isa = PBXBuildFile; fileRef = 304EEC172A6D7FCC00749F60 /* cities */; };
 		304EEC1F2A6D7FE200749F60 /* CitiesFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304EEC192A6D7FE200749F60 /* CitiesFile.swift */; };
-		304EEC202A6D7FE200749F60 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304EEC1A2A6D7FE200749F60 /* ContentView.swift */; };
 		304EEC212A6D7FE200749F60 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304EEC1B2A6D7FE200749F60 /* Utils.swift */; };
 		304EEC232A6D7FE200749F60 /* Autocomplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304EEC1D2A6D7FE200749F60 /* Autocomplete.swift */; };
 		304EEC242A6D7FE200749F60 /* CitiesCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304EEC1E2A6D7FE200749F60 /* CitiesCache.swift */; };
@@ -41,8 +40,8 @@
 
 /* Begin PBXFileReference section */
 		3043EA942B10A9F600EF6ECC /* APIRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIRouter.swift; sourceTree = "<group>"; };
-		3043EA952B10A9F700EF6ECC /* PokemonsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PokemonsAPI.swift; sourceTree = "<group>"; };
-		3043EA962B10A9F700EF6ECC /* PokemonsDataRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PokemonsDataRouter.swift; sourceTree = "<group>"; };
+		3043EA952B10A9F700EF6ECC /* WeatherAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherAPI.swift; sourceTree = "<group>"; };
+		3043EA962B10A9F700EF6ECC /* WeatherDataRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherDataRouter.swift; sourceTree = "<group>"; };
 		3043EA972B10A9F700EF6ECC /* NetworkingExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkingExtensions.swift; sourceTree = "<group>"; };
 		3043EA982B10A9F700EF6ECC /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		3043EA9E2B10AB8700EF6ECC /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
@@ -50,7 +49,6 @@
 		3043EAA22B10AB9200EF6ECC /* URLRequestBuilding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLRequestBuilding.swift; sourceTree = "<group>"; };
 		304EEC172A6D7FCC00749F60 /* cities */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cities; sourceTree = "<group>"; };
 		304EEC192A6D7FE200749F60 /* CitiesFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitiesFile.swift; sourceTree = "<group>"; };
-		304EEC1A2A6D7FE200749F60 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		304EEC1B2A6D7FE200749F60 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		304EEC1D2A6D7FE200749F60 /* Autocomplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Autocomplete.swift; sourceTree = "<group>"; };
 		304EEC1E2A6D7FE200749F60 /* CitiesCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitiesCache.swift; sourceTree = "<group>"; };
@@ -104,8 +102,8 @@
 				3043EA982B10A9F700EF6ECC /* APIClient.swift */,
 				3043EA942B10A9F600EF6ECC /* APIRouter.swift */,
 				3043EA972B10A9F700EF6ECC /* NetworkingExtensions.swift */,
-				3043EA952B10A9F700EF6ECC /* PokemonsAPI.swift */,
-				3043EA962B10A9F700EF6ECC /* PokemonsDataRouter.swift */,
+				3043EA952B10A9F700EF6ECC /* WeatherAPI.swift */,
+				3043EA962B10A9F700EF6ECC /* WeatherDataRouter.swift */,
 				3043EA9E2B10AB8700EF6ECC /* Router.swift */,
 				3043EA9F2B10AB8700EF6ECC /* Service.swift */,
 				3043EAA22B10AB9200EF6ECC /* URLRequestBuilding.swift */,
@@ -119,7 +117,6 @@
 				304EEC1D2A6D7FE200749F60 /* Autocomplete.swift */,
 				304EEC1E2A6D7FE200749F60 /* CitiesCache.swift */,
 				304EEC192A6D7FE200749F60 /* CitiesFile.swift */,
-				304EEC1A2A6D7FE200749F60 /* ContentView.swift */,
 				304EEC1B2A6D7FE200749F60 /* Utils.swift */,
 			);
 			path = Autocomplition;
@@ -316,8 +313,7 @@
 				304EEC232A6D7FE200749F60 /* Autocomplete.swift in Sources */,
 				30CBFB872A4EE70C00F3303C /* ImageData.swift in Sources */,
 				3069164E2A5C619100118B87 /* RectangleIcon.swift in Sources */,
-				304EEC202A6D7FE200749F60 /* ContentView.swift in Sources */,
-				3043EA9A2B10A9F700EF6ECC /* PokemonsAPI.swift in Sources */,
+				3043EA9A2B10A9F700EF6ECC /* WeatherAPI.swift in Sources */,
 				3043EA9D2B10A9F700EF6ECC /* APIClient.swift in Sources */,
 				3043EA9C2B10A9F700EF6ECC /* NetworkingExtensions.swift in Sources */,
 				306916482A5C422900118B87 /* Alert.swift in Sources */,
@@ -327,7 +323,7 @@
 				30CBFB702A4DEDB700F3303C /* WeatherAppApp.swift in Sources */,
 				304EEC212A6D7FE200749F60 /* Utils.swift in Sources */,
 				30CBFB922A51E58E00F3303C /* NetworkManager.swift in Sources */,
-				3043EA9B2B10A9F700EF6ECC /* PokemonsDataRouter.swift in Sources */,
+				3043EA9B2B10A9F700EF6ECC /* WeatherDataRouter.swift in Sources */,
 				30CBFB902A51DCA400F3303C /* APIError.swift in Sources */,
 				306916502A5C77EA00118B87 /* WeatherData.swift in Sources */,
 				3043EAA32B10AB9200EF6ECC /* URLRequestBuilding.swift in Sources */,
@@ -388,7 +384,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -442,7 +438,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -471,7 +467,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -504,7 +500,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -23,9 +23,6 @@ struct CitiesFile: CitiesSource {
         do {
             let data = try Data(contentsOf: location)
             let string = String(data: data, encoding: .utf8)
-            print("___")
-            print(string)
-            print("___")
             return string?.components(separatedBy: .newlines) ?? []
         }
         catch {

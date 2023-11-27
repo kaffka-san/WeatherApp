@@ -14,7 +14,7 @@ protocol APIRouter: Router {
 
 extension APIRouter {
     var baseURLWeather: String {
-        " https://api.openweathermap.org/data/2.5/weather"
+        "https://api.openweathermap.org/data/2.5/weather"
     }
     var baseUrlCityImage: String {
         "https://api.unsplash.com/search/photos"

@@ -7,18 +7,16 @@
 
 import Foundation
 import SwiftUI
-import Combine
 import UIKit
 
 struct WeatherView: View {
-    @StateObject var weatherViewModel = WeatherViewModel()
-    @State var animationOpacity: Double = 0.0
-    @State private var triggerValue: Bool = false
+    @StateObject var weatherViewModel: WeatherViewModel
     @State var searchedText = ""
     @ObservedObject private var autocomplete = AutocompleteObject()
-    @Environment(\.dismissSearch) var dismissSearch
+    @State private var isSearchFocused = false
 
-    init() {
+    init(weatherViewModel: WeatherViewModel) {
+        _weatherViewModel = StateObject(wrappedValue: weatherViewModel)
         configNavigationBar()
     }
 
@@ -29,23 +27,28 @@ struct WeatherView: View {
                 .onAppear {
                     weatherViewModel.getLocation()
                 }
-                .searchable(
-                    text: $searchedText,
-                    placement: .navigationBarDrawer(displayMode: .automatic),
-                    suggestions: {
-                        ForEach(autocomplete.suggestions, id: \.self) { suggestion in
-                            Text(suggestion)
-                                .searchCompletion(suggestion)
-                        }
+                .searchable(text: $searchedText, isPresented: $isSearchFocused)
+                .searchSuggestions({
+                    ForEach(autocomplete.suggestions, id: \.self) { suggestion in
+                        Text(suggestion)
+                            .searchCompletion(suggestion)
                     }
-                )
-                .onSubmit(of: .search) {
-                    weatherViewModel.getData(using: searchedText)
-                    hideKeyboard()
-                    searchedText = ""
+                })
+                .onSubmit(of: [.text, .search]) {
+                    weatherViewModel.getWeather(using: searchedText)
+                    weatherViewModel.getImageCity(cityName: searchedText)
+                    isSearchFocused = false
                     autocomplete.suggestions = []
+                    weatherViewModel.errorMessage = nil
+                    weatherViewModel.errorMessageImage = nil
                 }
-                .ignoresSafeArea(.keyboard)
+                .onChange(of: searchedText) { oldValue, newValue in
+                    weatherViewModel.errorMessage = nil
+                    weatherViewModel.errorMessageImage = nil
+                    weatherViewModel.isLoading = false
+                    weatherViewModel.isLoadingImg = false
+                }
+
         }
         .ignoresSafeArea(.keyboard)
         .preferredColorScheme(.dark)
@@ -55,18 +58,15 @@ struct WeatherView: View {
 private extension WeatherView {
     var content: some View {
         ZStack {
-            if weatherViewModel.stateApp == .empty {}
-            else if weatherViewModel.stateApp == .loading {
-                ProgressView()
-            } else if weatherViewModel.stateApp == .error {
-                VStack {
-                    Spacer()
-                    ErrorView(weatherVM: weatherViewModel)
-                        .padding(.vertical, UIScreen.main.bounds.height * 0.329)
-                    Spacer()
-                }
-            } else if weatherViewModel.stateApp == .loadData || weatherViewModel.stateApp == .loadDataAndImage {
+            switch weatherViewModel.stateApp {
+            case .loadData, .loadDataAndImage:
                 scrollView
+            case .error:
+                ErrorView(errorMessage: weatherViewModel.errorMessage)
+            case .loading:
+                ProgressView()
+            case .empty:
+                Text("")
             }
         }
     }
@@ -187,14 +187,14 @@ private extension WeatherView {
         .cornerRadius(30)
     }
     var weatherData: some View {
-        // MMain Weather Data
+        // Main Weather Data
         ZStack {
             VStack(spacing: 0) {
                 cityCard
                 statisticsCard
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: searchedText) { _ in
+            .onChange(of: searchedText) { _, _ in
                 autocomplete.autocomplete(searchedText)
             }
         }
@@ -235,6 +235,13 @@ private extension WeatherView {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView().preferredColorScheme(.dark)
+        WeatherView(
+            weatherViewModel: WeatherViewModel(
+                weatherAPI: WeatherAPI(
+                    apiClient: APIClient(),
+                    router: WeatherRouter()
+                )
+            )
+        ).preferredColorScheme(.dark)
     }
 }

@@ -25,8 +25,6 @@ actor CitiesCache {
         cachedCities = cities
         return cities
     }
-
-
 }
 
 extension CitiesCache {

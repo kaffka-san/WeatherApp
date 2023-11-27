@@ -27,14 +27,14 @@ final class WeatherRouter: Router, APIRouter {
         case let .weatherWithCoordinates(coordinates):
             return buildRequest(
                 method: .get,
-                url: "\(baseURLWeather)?lat=(\(coordinates.latitude)&lon=\(coordinates.longitude)&appiid=\(weatherApiKey)&units=metric",
+                url: "\(baseURLWeather)?appid=\(weatherApiKey)&units=metric&lon=\(coordinates.longitude)&lat=\(coordinates.latitude)",
                 headers: headers,
                 body: { nil }
             )
         case let .weatherWithCityName(cityName):
             return buildRequest(
                 method: .get,
-                url: "\(baseURLWeather)&query=\(cityName)&appiid=\(weatherApiKey)&units=metric",
+                url: "\(baseURLWeather)?q=\(cityName)&appid=\(weatherApiKey)&units=metric",
                 headers: headers,
                 body: { nil }
             )

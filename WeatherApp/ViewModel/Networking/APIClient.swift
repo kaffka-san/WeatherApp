@@ -18,6 +18,10 @@ final class APIClient {
     private let session = URLSession.shared
     private let decoder = JSONDecoder()
 
+    init() {
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+    }
+
     // MARK: - Public functions
 
     func requestVoid(

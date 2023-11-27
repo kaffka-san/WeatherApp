@@ -30,20 +30,7 @@ final class AutocompleteObject: ObservableObject {
 
             let newSuggestions = await citiesCache.lookup(prefix: text)
 
-            if isSingleSuggestion(suggestions, equalTo: text) {
-                // Do not offer only one suggestion same as the input
-                suggestions = []
-            } else {
-                suggestions = newSuggestions
-            }
+            suggestions = newSuggestions
         }
-    }
-
-    private func isSingleSuggestion(_ suggestions: [String], equalTo text: String) -> Bool {
-        guard let suggestion = suggestions.first, suggestions.count == 1 else {
-            return false
-        }
-
-        return suggestion.lowercased() == text.lowercased()
     }
 }
