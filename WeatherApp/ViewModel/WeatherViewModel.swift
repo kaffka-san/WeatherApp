@@ -16,6 +16,10 @@ class WeatherViewModel: ObservableObject {
     var urlFullImg: String = ""
 
     var stateApp: StateApp {
+        if !isLocationAllowed {
+            print("location restricted")
+            return .locationRestricted
+        }
         if errorMessage != nil {
             print("error state")
             return .error
@@ -50,6 +54,7 @@ class WeatherViewModel: ObservableObject {
     @Published var urlImg: String = ""
     @Published var isLoading: Bool = false
     @Published var isLoadingImg = false
+    @Published var isLocationAllowed = false
     @Published var errorMessage: String?
     @Published var errorMessageImage: String?
     @Published var alertItem: AlertItem?
@@ -67,15 +72,17 @@ class WeatherViewModel: ObservableObject {
                 let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
                 locationCL.fetchCityAndCountry { city, _, error in
                     guard let city = city, error == nil else { return }
-                 //   print("\(city), \(country)")
                     self.getWeather(using: location)
                     self.getImageCity(cityName: city)
+                    self.isLocationAllowed = true
                 }
             }
         case .restricted, .denied:
             alertItem = AlertContext.locationRestricted
+            self.isLocationAllowed = false
         case .notDetermined:
             alertItem = AlertContext.locationNotDetermined
+            self.isLocationAllowed = false
         default:
             return
         }
@@ -187,6 +194,7 @@ enum StateApp {
     case loadDataAndImage
     case error
     case loading
+    case locationRestricted
 }
 // https://api.openweathermap.org/data/2.5/weather?q=London&&appid=0dd9c31dbb4daf81bf91fa90977cefd3
 // api.teleport.org/api/urban_areas/slug:london/images/

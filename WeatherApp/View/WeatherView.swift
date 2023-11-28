@@ -48,6 +48,9 @@ struct WeatherView: View {
                     weatherViewModel.isLoading = false
                     weatherViewModel.isLoadingImg = false
                 }
+                .refreshable {
+                    weatherViewModel.getLocation()
+                }
 
         }
         .ignoresSafeArea(.keyboard)
@@ -67,6 +70,8 @@ private extension WeatherView {
                 ProgressView()
             case .empty:
                 Text("")
+            case .locationRestricted:
+                allowLocationView
             }
         }
     }
@@ -173,6 +178,56 @@ private extension WeatherView {
         .padding(.bottom, 40)
     }
     }
+
+    var allowLocationButton: some View {
+        Button {
+            guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                return
+            }
+            if UIApplication.shared.canOpenURL(settingsURL) {
+                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+            }
+        }
+    label: {
+        HStack {
+            Text("Allow location")
+            Image(systemName: "location.circle.fill")
+        }
+        .frame(width: 250, height: 50)
+        .backgroundBlur(radius: 25, opaque: true)
+        .background(Color.lightPurple.gradient.opacity(0.6))
+        .clipShape(RoundedRectangle(cornerRadius: 40))
+        .foregroundColor(.white)
+        .padding(.bottom, 40)
+    }
+    }
+
+    var allowLocationView: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.darkPurple.gradient)
+                .ignoresSafeArea()
+
+            VStack {
+                Spacer()
+                Text("This app requires your location to provide data")
+                    .padding(26)
+                    .font(.headline)
+                    .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
+                Image(systemName: "location.magnifyingglass")
+                    .resizable()
+                    .foregroundColor(.white.opacity(0.2))
+                    .scaledToFit()
+                    .frame(width: 400, height: 400)
+                    .offset(x: 70, y: 0)
+
+                allowLocationButton
+                // Spacer()
+            }
+            .ignoresSafeArea(.keyboard)
+        }
+    }
+
     var statisticsCard: some View {
         VStack(spacing: 0) {
             weatherInfo
