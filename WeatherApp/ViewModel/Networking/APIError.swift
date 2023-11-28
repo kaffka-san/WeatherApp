@@ -15,14 +15,14 @@ enum APIError: Error {
 
     var localisedDescription: String {
         switch self {
-        case .unknown: return "unknown error"
-        case .badURL: return "invalid URL"
+        case .unknown: return "We're sorry, an unexpected error has occurred."
+        case .badURL: return "Invalid URL Detected"
         case .url(let error):
             return error?.localizedDescription ?? "url session error"
         case .parsing:
-            return "parsing error"
+            return "Parsing Error"
         case .badResponse:
-            return "bad response"
+            return "We're sorry, but we couldn't find the city you're looking for. Please check your spelling and try again."
         }
     }
 }

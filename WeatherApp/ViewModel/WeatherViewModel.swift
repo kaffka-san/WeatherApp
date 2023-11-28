@@ -92,6 +92,7 @@ class WeatherViewModel: ObservableObject {
                  update(weatherModel)
                 isLoading = false
             } catch let apiError as APIError {
+                print("error VM \(apiError.localisedDescription)")
                 self.errorMessage = apiError.localisedDescription
             }
         }
@@ -108,6 +109,7 @@ class WeatherViewModel: ObservableObject {
                 update(weatherModel)
                 isLoading = false
             } catch let apiError as APIError {
+                print("error VM \(apiError.localisedDescription)")
                 self.errorMessage = apiError.localisedDescription
             }
         }

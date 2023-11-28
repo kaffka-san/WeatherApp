@@ -1,5 +1,3 @@
-
-
 /// The source of all city names
 protocol CitiesSource {
 

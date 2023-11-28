@@ -24,8 +24,7 @@ struct CitiesFile: CitiesSource {
             let data = try Data(contentsOf: location)
             let string = String(data: data, encoding: .utf8)
             return string?.components(separatedBy: .newlines) ?? []
-        }
-        catch {
+        } catch {
             return []
         }
     }

@@ -42,7 +42,7 @@ struct WeatherView: View {
                     weatherViewModel.errorMessage = nil
                     weatherViewModel.errorMessageImage = nil
                 }
-                .onChange(of: searchedText) { oldValue, newValue in
+                .onChange(of: searchedText) { _, _ in
                     weatherViewModel.errorMessage = nil
                     weatherViewModel.errorMessageImage = nil
                     weatherViewModel.isLoading = false
@@ -62,7 +62,7 @@ private extension WeatherView {
             case .loadData, .loadDataAndImage:
                 scrollView
             case .error:
-                ErrorView(errorMessage: weatherViewModel.errorMessage)
+                ErrorView(errorMessage: weatherViewModel.errorMessage ?? "Unexpected error has occurred")
             case .loading:
                 ProgressView()
             case .empty:
@@ -153,8 +153,7 @@ private extension WeatherView {
         Text(weatherViewModel.weatherData.description)
             .foregroundColor(.white)
             .font(.system(size: 20, weight: .thin))
-            .padding(.vertical, UIScreen.main.bounds.height * 0.0)
-            .padding(.bottom, 40)
+            .padding(.bottom, 20)
     }
 
     var getLocationButton: some View {
@@ -171,17 +170,20 @@ private extension WeatherView {
         .background(Color.lightPurple.gradient.opacity(0.6))
         .clipShape(RoundedRectangle(cornerRadius: 40))
         .foregroundColor(.white)
-        .padding(.vertical, 20)
+        .padding(.bottom, 40)
     }
     }
     var statisticsCard: some View {
         VStack(spacing: 0) {
             weatherInfo
+            Spacer()
             textLabel
+            Spacer()
             getLocationButton
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+        .frame(height: UIScreen.main.bounds.height * 0.4)
+        .padding(.bottom, 20)
         .backgroundBlur(radius: 6, opaque: true)
         .background(Color.darkPurple.opacity(0.2))
         .cornerRadius(30)
@@ -191,6 +193,7 @@ private extension WeatherView {
         ZStack {
             VStack(spacing: 0) {
                 cityCard
+                Spacer()
                 statisticsCard
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -217,8 +220,7 @@ private extension WeatherView {
                 textTitle: "Pressure"
             )
         }
-        .padding(.vertical, UIScreen.main.bounds.height * 0.04)
-        .padding(.horizontal, 20)
+        .padding(20)
     }
 
     func configNavigationBar() {

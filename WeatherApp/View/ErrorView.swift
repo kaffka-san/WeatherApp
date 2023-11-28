@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ErrorView: View {
-   @State private var errorMessage: String?
+   @State private var errorMessage: String
 
-    init(errorMessage: String?) {
+    init(errorMessage: String) {
         self.errorMessage = errorMessage
     }
 
@@ -21,10 +21,11 @@ struct ErrorView: View {
                 .ignoresSafeArea()
             VStack {
                 Spacer()
-                Text(String(errorMessage ?? "Unexpected error has occur"))
+                Text(errorMessage)
                     .foregroundColor(.white)
                     .font(.headline)
                     .padding(.vertical, 50)
+                    .padding(.horizontal, 40)
                 Image(systemName: "sun.max.trianglebadge.exclamationmark")
                     .resizable()
                     .foregroundColor(.white.opacity(0.2))
@@ -39,6 +40,6 @@ struct ErrorView: View {
 
 struct ErrorView_Previews: PreviewProvider {
     static var previews: some View {
-        ErrorView( errorMessage: "Error parse data")
+        ErrorView( errorMessage: "We're sorry, but we couldn't find the city you're looking for. Please check your spelling and try again.")
     }
 }
