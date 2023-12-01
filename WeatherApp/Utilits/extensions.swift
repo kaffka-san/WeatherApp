@@ -9,25 +9,26 @@ import SwiftUI
 
 extension View {
     func backgroundBlur(radius: CGFloat = 3, opaque: Bool = false) -> some View {
-        self
-            .background(
+        self.background(
                 Blur(radius: radius, opaque: opaque)
             )
     }
 }
 extension View {
-    func innerShadow <S: Shape, SS: ShapeStyle>(shape: S,
-                                                color: SS,
-                                                lineWidth: CGFloat = 1,
-                                                blur: CGFloat = 5,
-                                                blendMode: BlendMode = .normal,
-                                                opacity: Double = 1) -> some View {
+    func innerShadow <S: Shape, SS: ShapeStyle>(
+        shape: S,
+        color: SS,
+        lineWidth: CGFloat = 1,
+        blur: CGFloat = 5,
+        blendMode: BlendMode = .normal,
+        opacity: Double = 1
+    ) -> some View {
         self
             .overlay {
                 shape
                     .stroke(color, lineWidth: lineWidth)
                     .blendMode(blendMode)
-                    // .offset(y: 1)
+                // .offset(y: 1)
                     .blur(radius: blur)
                     .mask { shape }
                     .opacity(opacity)

@@ -27,6 +27,7 @@ final class WeatherRouter: Router, APIRouter {
         case let .weatherWithCoordinates(coordinates):
             return buildRequest(
                 method: .get,
+                // swiftlint:disable:next line_length
                 url: "\(baseURLWeather)?appid=\(weatherApiKey)&units=metric&lon=\(coordinates.longitude)&lat=\(coordinates.latitude)",
                 headers: headers,
                 body: { nil }
@@ -41,7 +42,7 @@ final class WeatherRouter: Router, APIRouter {
         case let .cityImage(cityName):
             return buildRequest(
                 method: .get,
-                url: "\(baseUrlCityImage)?query=\(cityName)&client_id=\(imageCityApiKey)",
+                url: "\(baseUrlCityImage)?query=\(cityName)%20city&client_id=\(imageCityApiKey)",
                 headers: headers,
                 body: { nil }
             )

@@ -22,6 +22,7 @@ enum APIError: Error {
         case .parsing:
             return "Parsing Error"
         case .badResponse:
+            // swiftlint:disable:next line_length
             return "We're sorry, but we couldn't find the city you're looking for. Please check your spelling and try again."
         }
     }

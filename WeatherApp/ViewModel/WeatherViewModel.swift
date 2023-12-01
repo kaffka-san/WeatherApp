@@ -9,34 +9,27 @@ import Foundation
 import CoreLocation
 import CoreLocationUI
 
-class WeatherViewModel: ObservableObject {
-    let service = NetworkManager()
+class WeatherViewModel: NSObject, ObservableObject {
     let weatherAPI: WeatherAPI
     var urlWeather: String = ""
     var urlFullImg: String = ""
 
     var stateApp: StateApp {
-        if !isLocationAllowed {
-            print("location restricted")
+        if isLoading || isLoadingImg {
+            return .loading
+        }
+        if !isLocationAllowed && searchedText.isEmpty && weatherData.cityName.isEmpty {
             return .locationRestricted
         }
         if errorMessage != nil {
-            print("error state")
             return .error
         }
-        if isLoading || isLoadingImg {
-            print("loading state")
-            return .loading
-        }
         if errorMessageImage != nil {
-            print("load data state")
             return .loadData
         }
         if weatherData.cityName.isEmpty {
-            print("empty state")
             return .empty
         } else {
-            print("data and image state")
             return .loadDataAndImage
         }
     }
@@ -57,32 +50,43 @@ class WeatherViewModel: ObservableObject {
     @Published var isLocationAllowed = false
     @Published var errorMessage: String?
     @Published var errorMessageImage: String?
-    @Published var alertItem: AlertItem?
-    @Published var locationDataManager = LocationDataManager()
+    @Published var searchedText = ""
+    var locationDataManager = LocationDataManager()
 
     init(weatherAPI: WeatherAPI) {
         self.weatherAPI = weatherAPI
+        super.init()
+        locationDataManager.onAuthStatusChanged = { [weak self] newStatus in
+            self?.isLocationAllowed = newStatus == .authorizedAlways || newStatus == .authorizedWhenInUse
+        }
     }
 
     @MainActor
     func getLocation() {
+        weatherData =  WeatherData(
+            cityName: "",
+            countryName: "",
+            temperature: "",
+            iconName: "",
+            humidity: "",
+            pressure: "",
+            feelsLike: "",
+            description: ""
+        )
         switch locationDataManager.locationManager.authorizationStatus {
         case .authorizedWhenInUse:
+            self.isLocationAllowed = true
             if let location = locationDataManager.locationManager.location?.coordinate {
                 let locationCL = CLLocation(latitude: location.latitude, longitude: location.longitude)
                 locationCL.fetchCityAndCountry { city, _, error in
                     guard let city = city, error == nil else { return }
                     self.getWeather(using: location)
                     self.getImageCity(cityName: city)
-                    self.isLocationAllowed = true
                 }
             }
-        case .restricted, .denied:
-            alertItem = AlertContext.locationRestricted
+        case .restricted, .denied, .notDetermined:
             self.isLocationAllowed = false
-        case .notDetermined:
-            alertItem = AlertContext.locationNotDetermined
-            self.isLocationAllowed = false
+
         default:
             return
         }
@@ -96,11 +100,12 @@ class WeatherViewModel: ObservableObject {
             guard let self else { return }
             do {
                 let weatherModel = try await weatherAPI.getWeather(coordinates: coordinates)
-                 update(weatherModel)
+                update(weatherModel)
                 isLoading = false
+                searchedText = ""
             } catch let apiError as APIError {
-                print("error VM \(apiError.localisedDescription)")
                 self.errorMessage = apiError.localisedDescription
+                searchedText = ""
             }
         }
     }
@@ -116,7 +121,6 @@ class WeatherViewModel: ObservableObject {
                 update(weatherModel)
                 isLoading = false
             } catch let apiError as APIError {
-                print("error VM \(apiError.localisedDescription)")
                 self.errorMessage = apiError.localisedDescription
             }
         }
@@ -133,12 +137,10 @@ class WeatherViewModel: ObservableObject {
 
                 if  !imageModel.results.isEmpty {
                     self.urlImg = imageModel.results[0].urls["regular"] ?? ""
-                    print("imgUrl \(self.urlImg)")
                 }
                 isLoadingImg = false
             } catch {
                 isLoadingImg = false
-                print("error get image \(error.localizedDescription)")
                 self.errorMessageImage = error.localizedDescription
             }
         }
@@ -160,7 +162,6 @@ class WeatherViewModel: ObservableObject {
             feelsLike: String(format: "%.f°", weatherModel.main.feelsLike),
             description: weatherModel.weather[0].description.capitalized
         )
-        print(weatherData)
     }
 
     func getIcon(id: Int) -> String {
@@ -196,8 +197,18 @@ enum StateApp {
     case loading
     case locationRestricted
 }
-// https://api.openweathermap.org/data/2.5/weather?q=London&&appid=0dd9c31dbb4daf81bf91fa90977cefd3
-// api.teleport.org/api/urban_areas/slug:london/images/
-// https://api.unsplash.com/photos/?page=1&query=london&client_id=gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE
-// ?page=1&query=london
-// https://api.unsplash.com/search/photos?query=new%20york&client_id=gFleRQgTSJRjceXWzsxPJHnPXwiA-iec1UzHY_Mz9wE
+
+extension WeatherViewModel: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .notDetermined, .restricted, .denied:
+            self.isLocationAllowed = false
+
+        case .authorizedAlways, .authorizedWhenInUse:
+            self.isLocationAllowed = true
+
+        @unknown default:
+            break
+        }
+    }
+}

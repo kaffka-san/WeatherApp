@@ -8,11 +8,16 @@
 import Foundation
 import CoreLocation
 
-class LocationDataManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+class LocationDataManager: NSObject, CLLocationManagerDelegate {
     var locationManager = CLLocationManager()
-    @Published var authorizationStatus: CLAuthorizationStatus?
-
+    var authorizationStatus: CLAuthorizationStatus {
+        didSet {
+            onAuthStatusChanged?(authorizationStatus)
+        }
+    }
+    var onAuthStatusChanged: ((CLAuthorizationStatus) -> Void)?
     override init() {
+        authorizationStatus = .notDetermined
         super.init()
         locationManager.delegate = self
     }

@@ -1,5 +1,5 @@
 //
-//  ErrorVIew.swift
+//  ErrorView.swift
 //  WeatherApp
 //
 //  Created by Anastasia Lenina on 02.07.2023.
@@ -26,6 +26,7 @@ struct ErrorView: View {
                     .font(.headline)
                     .padding(.vertical, 50)
                     .padding(.horizontal, 40)
+
                 Image(systemName: "sun.max.trianglebadge.exclamationmark")
                     .resizable()
                     .foregroundColor(.white.opacity(0.2))
@@ -40,6 +41,7 @@ struct ErrorView: View {
 
 struct ErrorView_Previews: PreviewProvider {
     static var previews: some View {
+        // swiftlint:disable:next line_length
         ErrorView( errorMessage: "We're sorry, but we couldn't find the city you're looking for. Please check your spelling and try again.")
     }
 }

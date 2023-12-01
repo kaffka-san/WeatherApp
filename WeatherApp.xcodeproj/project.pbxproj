@@ -33,7 +33,6 @@
 		30CBFB872A4EE70C00F3303C /* ImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB862A4EE70C00F3303C /* ImageData.swift */; };
 		30CBFB8B2A51D2F000F3303C /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB8A2A51D2F000F3303C /* ErrorView.swift */; };
 		30CBFB902A51DCA400F3303C /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB8F2A51DCA400F3303C /* APIError.swift */; };
-		30CBFB922A51E58E00F3303C /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB912A51E58E00F3303C /* NetworkManager.swift */; };
 		30CBFB972A531CA500F3303C /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CBFB962A531CA500F3303C /* LocationManager.swift */; };
 		30E8A3D82A588DD20042BC6F /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E8A3D72A588DD20042BC6F /* extensions.swift */; };
 /* End PBXBuildFile section */
@@ -66,7 +65,6 @@
 		30CBFB862A4EE70C00F3303C /* ImageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageData.swift; sourceTree = "<group>"; };
 		30CBFB8A2A51D2F000F3303C /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		30CBFB8F2A51DCA400F3303C /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
-		30CBFB912A51E58E00F3303C /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		30CBFB952A5313FE00F3303C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		30CBFB962A531CA500F3303C /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		30E8A3D72A588DD20042BC6F /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
@@ -88,7 +86,6 @@
 			children = (
 				30CBFB7D2A4E1B6E00F3303C /* WeatherViewModel.swift */,
 				30CBFB962A531CA500F3303C /* LocationManager.swift */,
-				30CBFB912A51E58E00F3303C /* NetworkManager.swift */,
 				3043EA932B10A9D300EF6ECC /* Networking */,
 				3052751E2A585CFA0025C48B /* Components */,
 			);
@@ -322,7 +319,6 @@
 				30CBFB802A4E272500F3303C /* Weather.swift in Sources */,
 				30CBFB702A4DEDB700F3303C /* WeatherAppApp.swift in Sources */,
 				304EEC212A6D7FE200749F60 /* Utils.swift in Sources */,
-				30CBFB922A51E58E00F3303C /* NetworkManager.swift in Sources */,
 				3043EA9B2B10A9F700EF6ECC /* WeatherDataRouter.swift in Sources */,
 				30CBFB902A51DCA400F3303C /* APIError.swift in Sources */,
 				306916502A5C77EA00118B87 /* WeatherData.swift in Sources */,

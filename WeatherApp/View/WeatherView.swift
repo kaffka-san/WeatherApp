@@ -11,7 +11,6 @@ import UIKit
 
 struct WeatherView: View {
     @StateObject var weatherViewModel: WeatherViewModel
-    @State var searchedText = ""
     @ObservedObject private var autocomplete = AutocompleteObject()
     @State private var isSearchFocused = false
 
@@ -27,7 +26,17 @@ struct WeatherView: View {
                 .onAppear {
                     weatherViewModel.getLocation()
                 }
-                .searchable(text: $searchedText, isPresented: $isSearchFocused)
+                .onChange(of: weatherViewModel.locationDataManager.authorizationStatus) { _, _ in
+                    weatherViewModel.getLocation()
+                }
+                .onChange(of: weatherViewModel.searchedText) { _, _ in
+                    weatherViewModel.errorMessage = nil
+                    weatherViewModel.errorMessageImage = nil
+                    weatherViewModel.isLoading = false
+                    weatherViewModel.isLoadingImg = false
+                    autocomplete.autocomplete(weatherViewModel.searchedText)
+                }
+                .searchable(text: $weatherViewModel.searchedText, isPresented: $isSearchFocused)
                 .searchSuggestions({
                     ForEach(autocomplete.suggestions, id: \.self) { suggestion in
                         Text(suggestion)
@@ -35,18 +44,12 @@ struct WeatherView: View {
                     }
                 })
                 .onSubmit(of: [.text, .search]) {
-                    weatherViewModel.getWeather(using: searchedText)
-                    weatherViewModel.getImageCity(cityName: searchedText)
+                    weatherViewModel.getWeather(using: weatherViewModel.searchedText)
+                    weatherViewModel.getImageCity(cityName: weatherViewModel.searchedText)
                     isSearchFocused = false
                     autocomplete.suggestions = []
                     weatherViewModel.errorMessage = nil
                     weatherViewModel.errorMessageImage = nil
-                }
-                .onChange(of: searchedText) { _, _ in
-                    weatherViewModel.errorMessage = nil
-                    weatherViewModel.errorMessageImage = nil
-                    weatherViewModel.isLoading = false
-                    weatherViewModel.isLoadingImg = false
                 }
                 .refreshable {
                     weatherViewModel.getLocation()
@@ -62,14 +65,13 @@ private extension WeatherView {
     var content: some View {
         ZStack {
             switch weatherViewModel.stateApp {
-            case .loadData, .loadDataAndImage:
+            case .loadData, .loadDataAndImage, .empty:
                 scrollView
             case .error:
                 ErrorView(errorMessage: weatherViewModel.errorMessage ?? "Unexpected error has occurred")
             case .loading:
                 ProgressView()
-            case .empty:
-                Text("")
+
             case .locationRestricted:
                 allowLocationView
             }
@@ -77,23 +79,27 @@ private extension WeatherView {
     }
 
     var scrollView: some View {
-        ScrollView {
-            weatherData
+        Group {
+            if !weatherViewModel.weatherData.cityName.isEmpty {
+                ScrollView {
+                    weatherData
+                }
+                .scrollIndicators(.hidden)
+                .background {
+                    backgroundImage
+                        .ignoresSafeArea()
+                }
+                .ignoresSafeArea(.keyboard)
+                .edgesIgnoringSafeArea(.horizontal)
+                .transition(.opacity.animation(.easeInOut(duration: 0.8)))
+            } else {
+               Rectangle()
+                    .fill(Color.black)
+                    .ignoresSafeArea()
+            }
         }
-        .scrollIndicators(.hidden)
-        .background {
-            backgroundImage
-                .ignoresSafeArea()
-        }
-        .ignoresSafeArea(.keyboard)
-        .edgesIgnoringSafeArea(.horizontal)
-        .alert(item: $weatherViewModel.alertItem) { alertItem in
-            Alert(title: alertItem.title,
-                  message: alertItem.message,
-                  dismissButton: alertItem.dismissButton)
-        }
-        .transition(.opacity.animation(.easeInOut(duration: 0.8)))
     }
+
     var backgroundImage: some View {
         AsyncImage(url: URL(string: weatherViewModel.urlImg)) { image in
             ZStack {
@@ -112,9 +118,12 @@ private extension WeatherView {
     var cityLabel: some View {
         Text(weatherViewModel.weatherData.cityName)
             .foregroundColor(.white)
-            .font(.system(size: 40, weight: .regular))
+            .font(.largeTitle)
+            .lineLimit(1)
+            .minimumScaleFactor(0.4)
             .multilineTextAlignment(.center)
-            .padding(.vertical, 5)
+            .padding(.vertical, 6)
+            .padding(.horizontal, 16)
     }
 
     var countryLabel: some View {
@@ -152,6 +161,7 @@ private extension WeatherView {
         .clipShape(RoundedRectangle(cornerRadius: 40))
         .padding(.horizontal, 36)
         .padding(.bottom, 60)
+        .padding(.top, 10)
     }
 
     var textLabel: some View {
@@ -211,19 +221,20 @@ private extension WeatherView {
             VStack {
                 Spacer()
                 Text("This app requires your location to provide data")
-                    .padding(26)
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 6)
                     .font(.headline)
-                    .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
+                    .frame(height: 100, alignment: .leading)
+                    .frame(maxWidth: .infinity)
                 Image(systemName: "location.magnifyingglass")
                     .resizable()
                     .foregroundColor(.white.opacity(0.2))
                     .scaledToFit()
-                    .frame(width: 400, height: 400)
+                    .frame(width: 380, height: 380)
                     .offset(x: 70, y: 0)
-
                 allowLocationButton
-                // Spacer()
             }
+            .frame(maxWidth: .infinity)
             .ignoresSafeArea(.keyboard)
         }
     }
@@ -231,6 +242,7 @@ private extension WeatherView {
     var statisticsCard: some View {
         VStack(spacing: 0) {
             weatherInfo
+                .padding(.top, 20)
             Spacer()
             textLabel
             Spacer()
@@ -252,9 +264,6 @@ private extension WeatherView {
                 statisticsCard
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: searchedText) { _, _ in
-                autocomplete.autocomplete(searchedText)
-            }
         }
     }
     private var weatherInfo: some View {

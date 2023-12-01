@@ -44,7 +44,6 @@ extension URL: URLConvertible {
 extension String: URLConvertible {
     public func asURL() throws -> URL {
         if let url = URL(string: self) {
-            print("url \(url)")
             return url
         } else {
             throw URLError(.badURL)

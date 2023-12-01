@@ -22,14 +22,16 @@ final class AutocompleteObject: ObservableObject {
         task?.cancel()
 
         task = Task {
-            await Task.sleep(UInt64(delay * 1_000_000_000.0))
-            guard !Task.isCancelled else {
-                return
-            }
+            do {
+                try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000.0))
+                guard !Task.isCancelled else {
+                    return
+                }
 
-            let newSuggestions = await citiesCache.lookup(prefix: text)
+                let newSuggestions = await citiesCache.lookup(prefix: text)
 
-            suggestions = newSuggestions
+                suggestions = newSuggestions
+            } catch {}
         }
     }
 }
